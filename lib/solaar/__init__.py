@@ -20,6 +20,11 @@ import sys
 
 NAME = "Solaar"
 
+# plasmaar identity: keeps runtime state (config directory, application id, notifications,
+# input devices) apart from an installed Solaar, so the two never share settings or instances.
+APP_NAME = "plasmaar"
+APP_ID = "io.github.fredaime.plasmaar"
+
 try:
     __version__ = (
         subprocess.check_output(

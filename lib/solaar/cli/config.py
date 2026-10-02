@@ -22,9 +22,8 @@ from logitech_receiver.common import NamedInts
 from logitech_receiver.settings_templates import SettingsProtocol
 from logitech_receiver.settings_validator import Range
 
+from solaar import APP_ID
 from solaar import configuration
-
-APP_ID = "io.github.pwr_solaar.solaar"
 
 
 def _parse_int_or_hex(s) -> int | None:

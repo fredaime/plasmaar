@@ -25,6 +25,7 @@ import yaml
 
 from logitech_receiver.common import Alert
 
+from solaar import APP_ID
 from solaar.i18n import _
 from solaar.ui.config_panel import change_setting
 from solaar.ui.config_panel import record_setting
@@ -44,9 +45,6 @@ from gi.repository import Gtk  # NOQA: E402
 logger = logging.getLogger(__name__)
 
 assert Gtk.get_major_version() > 2, "Solaar requires Gtk 3 python bindings"
-
-
-APP_ID = "io.github.pwr_solaar.solaar"
 
 
 class GtkSignal(Enum):

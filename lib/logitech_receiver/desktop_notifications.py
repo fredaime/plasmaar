@@ -23,10 +23,11 @@ desktops implement this service.
 
 import logging
 
+from solaar import APP_NAME
+
 logger = logging.getLogger(__name__)
 
-APP_NAME = "solaar"
-DESKTOP_ENTRY = "solaar"
+DESKTOP_ENTRY = APP_NAME
 
 _BUS_NAME = "org.freedesktop.Notifications"
 _OBJECT_PATH = "/org/freedesktop/Notifications"

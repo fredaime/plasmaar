@@ -29,6 +29,7 @@ from gi.repository.Gdk import ScrollDirection
 
 import solaar.gtk as gtk
 
+from solaar import APP_NAME
 from solaar import NAME
 from solaar.i18n import _
 
@@ -168,7 +169,7 @@ try:
     def _create(menu):
         icons._init_icon_paths()
         ind = AppIndicator3.Indicator.new(
-            "indicator-solaar", _icon_file(icons.TRAY_INIT), AppIndicator3.IndicatorCategory.HARDWARE
+            f"indicator-{APP_NAME}", _icon_file(icons.TRAY_INIT), AppIndicator3.IndicatorCategory.HARDWARE
         )
         ind.set_title(NAME)
         ind.set_status(AppIndicator3.IndicatorStatus.ACTIVE)

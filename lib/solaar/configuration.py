@@ -24,13 +24,14 @@ import yaml
 
 from logitech_receiver.common import NamedInt
 
+from solaar import APP_NAME
 from solaar import __version__
 
 logger = logging.getLogger(__name__)
 
 _XDG_CONFIG_HOME = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser(os.path.join("~", ".config"))
-_yaml_file_path = os.path.join(_XDG_CONFIG_HOME, "solaar", "config.yaml")
-_json_file_path = os.path.join(_XDG_CONFIG_HOME, "solaar", "config.json")
+_yaml_file_path = os.path.join(_XDG_CONFIG_HOME, APP_NAME, "config.yaml")
+_json_file_path = os.path.join(_XDG_CONFIG_HOME, APP_NAME, "config.json")
 
 _KEY_VERSION = "_version"
 _KEY_NAME = "_NAME"

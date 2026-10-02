@@ -38,6 +38,7 @@ import psutil
 import yaml
 
 from keysyms import keysymdef
+from solaar import APP_NAME
 
 # There is no evdev on macOS or Windows. Diversion will not work without
 # it but other Solaar functionality is available.
@@ -265,7 +266,7 @@ def setup_uinput():
     if udevice is not None:
         return udevice
     try:
-        udevice = evdev.uinput.UInput(events=devicecap, name="solaar-keyboard")
+        udevice = evdev.uinput.UInput(events=devicecap, name=f"{APP_NAME}-keyboard")
         if logger.isEnabledFor(logging.INFO):
             logger.info("uinput device set up")
         return True
@@ -1497,7 +1498,7 @@ def process_notification(device, notification: HIDPPNotification, feature) -> No
 
 
 _XDG_CONFIG_HOME = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser(os.path.join("~", ".config"))
-_file_path = os.path.join(_XDG_CONFIG_HOME, "solaar", "rules.yaml")
+_file_path = os.path.join(_XDG_CONFIG_HOME, APP_NAME, "rules.yaml")
 
 rules = built_in_rules
 

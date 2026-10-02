@@ -71,7 +71,7 @@ def _create_parser():
     sp = subparsers.add_parser(
         "config",
         description="Print or load device-specific settings.  Only some settings can be loaded.  "
-        "Loading complex settings uses the same syntax as in ~/.config/solaar/config.yaml",
+        "Loading complex settings uses the same syntax as in ~/.config/plasmaar/config.yaml",
         epilog="Please note that configuration only works on active devices.",
     )
     sp.add_argument(
