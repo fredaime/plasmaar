@@ -24,8 +24,8 @@ def isolate_solaar_configuration(tmp_path, monkeypatch):
 
 @pytest.fixture(autouse=True)
 def mock_desktop_notifications(monkeypatch):
-    """Swap the libnotify backend for a mock in both desktop_notifications
-    modules. Tests still exercise the real init/alert/show code paths, but
+    """Swap the libnotify backend for a mock in the GTK UI's desktop_notifications
+    module. Tests still exercise the real init/alert/show code paths, but
     Notification.show() never reaches the daemon — without this the suite
     raises real 'MockDevice' / 'unknown' notifications on every run.
 
@@ -33,11 +33,26 @@ def mock_desktop_notifications(monkeypatch):
     notify = mock.MagicMock(name="Notify")
     notify.is_initted.return_value = True
     notify.init.return_value = True
-    for modname in ("solaar.ui.desktop_notifications", "logitech_receiver.desktop_notifications"):
-        try:
-            module = importlib.import_module(modname)
-        except Exception:
-            continue
-        monkeypatch.setattr(module, "Notify", notify, raising=False)
-        monkeypatch.setattr(module, "_notifications", {}, raising=False)
+    try:
+        module = importlib.import_module("solaar.ui.desktop_notifications")
+    except Exception:
+        return notify
+    monkeypatch.setattr(module, "Notify", notify, raising=False)
+    monkeypatch.setattr(module, "_notifications", {}, raising=False)
     return notify
+
+
+@pytest.fixture(autouse=True)
+def mock_notification_bus(monkeypatch):
+    """Swap the core desktop_notifications D-Bus proxy for a mock, so no test
+    reaches the real org.freedesktop.Notifications service.
+
+    Returns the proxy mock; its call_sync replies with notification id 7."""
+    from gi.repository import GLib
+    from logitech_receiver import desktop_notifications
+
+    proxy = mock.MagicMock(name="NotificationsProxy")
+    proxy.call_sync.return_value = GLib.Variant("(u)", (7,))
+    monkeypatch.setattr(desktop_notifications, "_proxy", proxy)
+    monkeypatch.setattr(desktop_notifications, "_notifications", {})
+    return proxy
