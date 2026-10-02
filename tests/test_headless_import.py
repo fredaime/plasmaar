@@ -59,3 +59,21 @@ def test_listener_imports_the_device_modules_it_uses():
     )
 
     assert result.returncode == 0, result.stderr
+
+
+def test_daemon_never_imports_gdk_or_gtk():
+    """Importing Gdk opens the display, and GDK exits the process when the compositor restarts."""
+    code = textwrap.dedent(
+        """
+        import sys
+        import solaar.daemon
+        from logitech_receiver import diversion
+        diversion.allow_display = False
+        assert diversion.gkeymap() is None
+        loaded = [m for m in ("gi.repository.Gdk", "gi.repository.Gtk") if m in sys.modules]
+        assert not loaded, loaded
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=60)
+
+    assert result.returncode == 0, result.stderr

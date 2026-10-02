@@ -7,6 +7,14 @@ from solaar import daemon
 from solaar.errors import ErrorReason
 
 
+@pytest.fixture(autouse=True)
+def service(monkeypatch):
+    """Never touch the real session bus: replace the D-Bus service with a mock."""
+    service_class = mock.Mock(name="Service")
+    monkeypatch.setattr(daemon.dbus_service, "Service", service_class)
+    return service_class.return_value
+
+
 @pytest.fixture
 def run_idle_now(monkeypatch):
     """Run GLib.idle_add callbacks immediately instead of on the main loop."""
@@ -136,3 +144,56 @@ def test_version_option(capsys):
 
     assert exit_info.value.code == 0
     assert capsys.readouterr().out.startswith("plasmaard ")
+
+
+def test_status_changed_forwards_devices_to_dbus(run_idle_now, show, service):
+    device = mock.Mock(name="device", kind="mouse")
+
+    daemon.Daemon().status_changed(device, Alert.NONE, None)
+
+    service.device_changed.assert_called_once_with(device)
+
+
+def test_status_changed_skips_receivers_for_dbus(run_idle_now, show, service):
+    receiver = mock.Mock(name="receiver", kind=None)
+
+    daemon.Daemon().status_changed(receiver, Alert.NONE, None)
+
+    service.device_changed.assert_not_called()
+
+
+def test_setting_changed_forwards_to_dbus(run_idle_now, service):
+    device, setting = _device_with_setting("dpi")
+    setting_class = mock.Mock()
+    setting_class.name = "dpi"
+
+    daemon.Daemon().setting_changed(device, setting_class, [800])
+
+    service.setting_changed.assert_called_once_with(device, setting)
+
+
+def test_run_starts_and_stops_dbus_service(lifecycle, service):
+    d = daemon.Daemon()
+    lifecycle.start_all.side_effect = d.quit
+
+    d.run()
+
+    service.start.assert_called_once()
+    service.stop.assert_called_once()
+
+
+def test_no_dbus_option(lifecycle, service):
+    d = daemon.Daemon(dbus_api=False)
+    lifecycle.start_all.side_effect = d.quit
+
+    d.run()
+
+    assert d.service is None
+    service.start.assert_not_called()
+
+
+def test_losing_bus_name_exits_with_error(lifecycle, service):
+    d = daemon.Daemon()
+    lifecycle.start_all.side_effect = d._name_lost
+
+    assert d.run() == 1
