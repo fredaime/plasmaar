@@ -46,3 +46,16 @@ def test_imports_without_gui_toolkit(module):
     result = subprocess.run([sys.executable, "-c", _BLOCKER, module], capture_output=True, text=True, timeout=60)
 
     assert result.returncode == 0, result.stderr
+
+
+def test_listener_imports_the_device_modules_it_uses():
+    """solaar.listener calls logitech_receiver.device/.receiver; they must not rely on the GTK UI importing them."""
+    code = "import solaar.listener as l; assert l.logitech_receiver.device and l.logitech_receiver.receiver"
+    result = subprocess.run(
+        [sys.executable, "-c", _BLOCKER.replace("importlib.import_module(sys.argv[1])", code), "x"],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+
+    assert result.returncode == 0, result.stderr
