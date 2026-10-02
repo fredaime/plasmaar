@@ -50,7 +50,7 @@ def test_show_sends_notify(mock_notification_bus):
     assert result == 7
     app, replaces, icon, summary, body, actions, hints, timeout = _notify_args(mock_notification_bus)
     assert (app, replaces, icon, summary, body, actions, timeout) == (
-        "solaar",
+        "plasmaar",
         0,
         "input-mouse",
         "MockDevice",
@@ -58,7 +58,7 @@ def test_show_sends_notify(mock_notification_bus):
         [],
         -1,
     )
-    assert hints == {"desktop-entry": "solaar", "urgency": 1}
+    assert hints == {"desktop-entry": "plasmaar", "urgency": 1}
 
 
 def test_show_replaces_previous_notification_of_device(mock_notification_bus):

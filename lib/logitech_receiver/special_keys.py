@@ -23,11 +23,13 @@ from enum import IntEnum
 
 import yaml
 
+from solaar import APP_NAME
+
 from .common import NamedInts
 from .common import UnsortedNamedInts
 
 _XDG_CONFIG_HOME = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser(os.path.join("~", ".config"))
-_keys_file_path = os.path.join(_XDG_CONFIG_HOME, "solaar", "keys.yaml")
+_keys_file_path = os.path.join(_XDG_CONFIG_HOME, APP_NAME, "keys.yaml")
 
 
 # Original set done as
