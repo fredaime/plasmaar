@@ -71,4 +71,4 @@ lint:
 
 test:
 	@echo "Running Solaar tests"
-	pytest --cov --cov-report=xml
+	pytest -rs --cov --cov-report=xml
