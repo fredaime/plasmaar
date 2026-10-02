@@ -27,7 +27,8 @@ from collections import namedtuple
 from functools import partial
 from typing import Callable
 
-import logitech_receiver
+import logitech_receiver.device
+import logitech_receiver.receiver
 
 from logitech_receiver import base
 from logitech_receiver import exceptions

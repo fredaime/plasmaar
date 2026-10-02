@@ -1,0 +1,14 @@
+[Unit]
+Description=plasmaar service for Logitech HID++ devices
+Documentation=https://github.com/fredaime/plasmaar
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/plasmaard
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
