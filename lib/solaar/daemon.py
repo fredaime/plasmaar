@@ -55,7 +55,7 @@ try:  # GLib >= 2.80 moved Unix signal sources to GLibUnix; GLib.unix_signal_add
     from gi.repository import GLibUnix
 
     _unix_signal_add = GLibUnix.signal_add
-except (ImportError, ValueError):
+except (ImportError, ValueError, AttributeError):  # older GLib: no GLibUnix, or no signal_add in it
     _unix_signal_add = GLib.unix_signal_add
 
 _LOG_FORMAT = "%(asctime)s,%(msecs)03d %(levelname)8s [%(threadName)s] %(name)s: %(message)s"
