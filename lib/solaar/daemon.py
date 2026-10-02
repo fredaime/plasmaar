@@ -23,9 +23,8 @@ what the GTK application does around the listener, minus the windows:
 - records setting changes made on the device itself (so saved values follow),
 - shows desktop notifications for device alerts,
 - pings devices and re-applies settings after resume from suspend,
-- saves the configuration and releases devices on SIGTERM/SIGINT.
-
-The D-Bus API for front-ends is added on top of this service.
+- saves the configuration and releases devices on SIGTERM/SIGINT,
+- exposes the D-Bus API for front-ends (solaar.dbus_service).
 """
 
 from __future__ import annotations
@@ -39,12 +38,14 @@ import gi
 
 from gi.repository import GLib
 from logitech_receiver import desktop_notifications
+from logitech_receiver import diversion
 from logitech_receiver.common import Alert
 
 from solaar import APP_NAME
 from solaar import __version__
 from solaar import configuration
 from solaar import dbus
+from solaar import dbus_service
 from solaar import listener
 from solaar.errors import ErrorReason
 
@@ -67,10 +68,11 @@ class Daemon:
     The listener invokes the callbacks from its device threads; they are
     marshalled onto the main loop with GLib.idle_add before touching state."""
 
-    def __init__(self, notifications: bool = True):
+    def __init__(self, notifications: bool = True, dbus_api: bool = True):
         self.notifications = notifications
         self.loop = GLib.MainLoop()
         self.exit_code = 0
+        self.service = dbus_service.Service(on_name_lost=self._name_lost) if dbus_api else None
 
     # --- listener callbacks (called from listener threads) ---
 
@@ -92,6 +94,8 @@ class Daemon:
         logger.debug("status changed: %s (%s) %s", device, alert, reason)
         if self.notifications and alert & (Alert.NOTIFICATION | Alert.ATTENTION):
             desktop_notifications.show(device, reason)
+        if self.service and device.kind is not None:  # receivers have no kind; their devices report separately
+            self.service.device_changed(device)
         return False
 
     def _record_setting(self, device, setting_class, values):
@@ -105,6 +109,8 @@ class Daemon:
             setting.update_key_value(values[0], values[-1])
         else:
             setting.update(values[-1])
+        if self.service:
+            self.service.setting_changed(device, setting)
         return False
 
     def _report_error(self, reason: ErrorReason, object_):
@@ -125,6 +131,10 @@ class Daemon:
             self.loop.quit()
         return False
 
+    def _name_lost(self):
+        self.exit_code = 1
+        self.loop.quit()
+
     def quit(self, *_args):
         logger.info("stopping")
         self.loop.quit()
@@ -132,8 +142,12 @@ class Daemon:
 
     def run(self) -> int:
         logger.info("%s daemon %s starting", APP_NAME, __version__)
+        # never connect to the display: GDK exits the process when the compositor restarts
+        diversion.allow_display = False
         if self.notifications:
             desktop_notifications.init()
+        if self.service:
+            self.service.start()
         listener.setup_scanner(self.status_changed, self.setting_changed, self.error)
         dbus.watch_suspend_resume(lambda: listener.ping_all(True))
         configuration.defer_saves = True
@@ -144,6 +158,8 @@ class Daemon:
             self.loop.run()
         finally:
             listener.stop_all()  # also saves the configuration
+            if self.service:
+                self.service.stop()
             desktop_notifications.uninit()
         return self.exit_code
 
@@ -154,6 +170,7 @@ def _parse_arguments(argv=None):
     )
     parser.add_argument("-d", "--debug", action="count", default=0, help="print logging messages, -dd for more")
     parser.add_argument("--no-notifications", action="store_true", help="do not show desktop notifications")
+    parser.add_argument("--no-dbus", action="store_true", help="do not provide the D-Bus API")
     parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
     return parser.parse_args(argv)
 
@@ -166,7 +183,7 @@ def _setup_logging(debug: int):
 def main(argv=None) -> int:
     args = _parse_arguments(argv)
     _setup_logging(args.debug)
-    return Daemon(notifications=not args.no_notifications).run()
+    return Daemon(notifications=not args.no_notifications, dbus_api=not args.no_dbus).run()
 
 
 if __name__ == "__main__":

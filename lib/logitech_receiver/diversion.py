@@ -53,12 +53,6 @@ from .special_keys import CONTROL
 
 from gi.repository import GLib  # NOQA: E402 # isort:skip
 
-try:  # Gdk is optional: without it (headless) there is no keymap, so KeyPress actions are unavailable
-    gi.require_version("Gdk", "3.0")
-    from gi.repository import Gdk  # NOQA: E402
-except (ImportError, ValueError):
-    Gdk = None
-
 if typing.TYPE_CHECKING:
     from .base import HIDPPNotification
 
@@ -104,10 +98,36 @@ _BUTTON_PRESS = 3
 
 CLICK, DEPRESS, RELEASE = "click", "depress", "release"
 
-gdisplay = Gdk.Display.get_default() if Gdk else None  # None if run without a full window system
-gkeymap = Gdk.Keymap.get_for_display(gdisplay) if gdisplay else None
-if logger.isEnabledFor(logging.INFO):
-    logger.info("GDK Keymap %sset up", "" if gkeymap else "not ")
+# The GDK keymap needs a display connection, and GDK exits the process when that connection is lost
+# (e.g. when the compositor restarts). Importing Gdk alone already opens the display, so Gdk is only
+# imported when a rule needs the keymap; headless services forbid it entirely with allow_display = False.
+allow_display = True
+_gkeymap = None
+_gkeymap_checked = False
+
+
+def _import_gdk():
+    try:  # Gdk is optional: without it there is no keymap, so KeyPress actions are unavailable
+        gi.require_version("Gdk", "3.0")
+        from gi.repository import Gdk
+
+        return Gdk
+    except (ImportError, ValueError):
+        return None
+
+
+def gkeymap():
+    """The GDK keymap, or None if GDK, a display, or display access is not available."""
+    global _gkeymap, _gkeymap_checked
+    if not _gkeymap_checked and allow_display:
+        _gkeymap_checked = True
+        Gdk = _import_gdk()
+        gdisplay = Gdk.Display.get_default() if Gdk else None  # None if run without a full window system
+        _gkeymap = Gdk.Keymap.get_for_display(gdisplay) if gdisplay else None
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("GDK Keymap %sset up", "" if _gkeymap else "not ")
+    return _gkeymap if allow_display else None
+
 
 wayland = os.getenv("WAYLAND_DISPLAY")  # is this Wayland?
 if wayland:
@@ -792,8 +812,9 @@ class Modifiers(Condition):
     def evaluate(self, feature, notification: HIDPPNotification, device, last_result):
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("evaluate condition: %s", self)
-        if gkeymap:
-            current = gkeymap.get_modifier_state()  # get the current keyboard modifier
+        keymap = gkeymap()
+        if keymap:
+            current = keymap.get_modifier_state()  # get the current keyboard modifier
             return self.desired == (current & MODIFIER_MASK)
         else:
             logger.warning("no keymap so cannot determine modifier keys")
@@ -1110,7 +1131,10 @@ def keysym_to_keycode(keysym, _modifiers) -> Tuple[int, int]:  # maybe should ta
     It may not be completely general.
     """
     group = kbdgroup() or 0
-    keycodes = gkeymap.get_entries_for_keyval(keysym)
+    keymap = gkeymap()
+    if keymap is None:
+        return None, None
+    keycodes = keymap.get_entries_for_keyval(keysym)
     (keycode, level) = (None, None)
     for k in keycodes.keys:  # mappings that have the correct group
         if group == k.group and k.keycode < 256 and (level is None or k.level < level):
@@ -1121,7 +1145,7 @@ def keysym_to_keycode(keysym, _modifiers) -> Tuple[int, int]:  # maybe should ta
 
     for k in keycodes.keys:  # mappings for group 0 where keycode only has group 0 mappings
         if 0 == k.group and k.keycode < 256 and (level is None or k.level < level):
-            (a, m, vs) = gkeymap.get_entries_for_keycode(k.keycode)
+            (a, m, vs) = keymap.get_entries_for_keycode(k.keycode)
             if a and all(mk.group == 0 for mk in m):
                 keycode = k.keycode
                 level = k.level
@@ -1186,8 +1210,9 @@ class KeyPress(Action):
                 self.mods(level, modifiers, _KEY_RELEASE)
 
     def evaluate(self, feature, notification: HIDPPNotification, device, last_result):
-        if gkeymap:
-            current = gkeymap.get_modifier_state()
+        keymap = gkeymap()
+        if keymap:
+            current = keymap.get_modifier_state()
             if logger.isEnabledFor(logging.INFO):
                 logger.info(
                     "KeyPress action: %s %s, group %s, modifiers %s",
