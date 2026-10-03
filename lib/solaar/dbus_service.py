@@ -30,6 +30,7 @@ from gi.repository import GLib
 
 from solaar import api
 from solaar import buttons
+from solaar import haptic_events
 from solaar import kde_actions
 from solaar.tasks import TaskRunner
 
@@ -100,6 +101,17 @@ INTROSPECTION_XML = f"""
       <arg type="s" name="name"/>
       <arg type="s" name="value_json"/>
     </signal>
+    <!-- desktop integration (docs/desktop-events.md) -->
+    <method name="GetHapticEvents">
+      <arg type="s" name="device_id" direction="in"/>
+      <arg type="s" name="haptic_events_json" direction="out"/>
+    </method>
+    <method name="SetHapticEvent">
+      <arg type="s" name="device_id" direction="in"/>
+      <arg type="s" name="event" direction="in"/>
+      <arg type="s" name="waveform" direction="in"/>
+      <arg type="s" name="haptic_events_json" direction="out"/>
+    </method>
   </interface>
 </node>
 """
@@ -171,6 +183,8 @@ class Service:
 
     def _method_call(self, _connection, _sender, _path, _interface, method, parameters, invocation):
         args = parameters.unpack()
+        if self._desktop_method_call(method, args, invocation):
+            return
         handler = {
             "SetSetting": self._set_setting,
             "SetSettingKey": self._set_setting_key,
@@ -278,6 +292,21 @@ class Service:
         if self._connection is None:
             return
         GLib.idle_add(_emit_signal, self._connection, signal, GLib.Variant(signature, args))
+
+    # --- desktop integration: haptic events (docs/desktop-events.md) ---
+
+    _DESKTOP_METHODS = {
+        "GetHapticEvents": lambda dev_id: api.to_json(haptic_events.get_haptic_events(dev_id)),
+        "SetHapticEvent": lambda dev_id, event, waveform: api.to_json(haptic_events.set_haptic_event(dev_id, event, waveform)),
+    }
+
+    def _desktop_method_call(self, method, args, invocation) -> bool:
+        """Handle the desktop-integration methods; False if method is not one of them."""
+        handler = self._DESKTOP_METHODS.get(method)
+        if handler is None:
+            return False
+        self._worker(self._run, handler, args, invocation)
+        return True
 
 
 def _return_value(invocation, result):
