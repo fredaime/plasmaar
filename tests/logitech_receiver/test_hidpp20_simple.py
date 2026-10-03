@@ -14,6 +14,8 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import logging
+
 import pytest
 
 from logitech_receiver import common
@@ -160,6 +162,67 @@ def test_get_battery_none():
     assert feature == SupportedFeature.UNIFIED_BATTERY
     assert battery.level == 80
     assert battery.status == common.BatteryStatus.DISCHARGING
+
+
+def _absent(feature):
+    """ROOT.GetFeature reply of a device that does not have `feature` (index 0)."""
+    return fake_hidpp.Response("000000", 0x0000, f"{int(feature):0>4X}")
+
+
+@pytest.fixture
+def short_device_str(monkeypatch):
+    """Print fake devices like real ones (short), so tests can compare whole log messages."""
+    monkeypatch.setattr(fake_hidpp.Device, "__str__", lambda self: "<TESTD>")
+
+
+def _hidpp20_records(caplog):
+    return [(r.levelno, r.getMessage()) for r in caplog.records if r.name == "logitech_receiver.hidpp20"]
+
+
+def test_feature_request_for_absent_feature_is_debug_only(short_device_str, caplog):
+    caplog.set_level(logging.DEBUG, logger="logitech_receiver.hidpp20")
+    device = fake_hidpp.Device(responses=[_absent(SupportedFeature.BATTERY_STATUS)], feature=SupportedFeature.UNIFIED_BATTERY)
+
+    result = hidpp20.feature_request(device, SupportedFeature.BATTERY_STATUS)
+
+    assert result is None
+    assert _hidpp20_records(caplog) == [(logging.DEBUG, "<TESTD>: no feature BATTERY STATUS, request not sent")]
+
+
+def test_battery_probing_logs_no_warning(caplog):
+    """get_battery() tries every battery feature in turn; on a device with only UNIFIED_BATTERY
+    (MX Master 4, MX Anywhere 3S) the misses are expected and must not warn on every start."""
+    caplog.set_level(logging.DEBUG, logger="logitech_receiver.hidpp20")
+    responses = [
+        _absent(SupportedFeature.BATTERY_STATUS),
+        _absent(SupportedFeature.BATTERY_VOLTAGE),
+        fake_hidpp.Response("500100ffff", 0x0410),
+    ]
+    device = fake_hidpp.Device(responses=responses, feature=SupportedFeature.UNIFIED_BATTERY)
+
+    feature, battery = _hidpp20.get_battery(device, None)
+
+    assert feature == SupportedFeature.UNIFIED_BATTERY
+    assert [level for level, _ in _hidpp20_records(caplog) if level >= logging.WARNING] == []
+
+
+@pytest.mark.parametrize(
+    "make_unavailable, reason",
+    [
+        (lambda device: setattr(device, "online", False), "device offline"),
+        (lambda device: setattr(device.features, "supported", False), "feature table unavailable"),
+    ],
+)
+def test_feature_request_unexpected_failure_warns_briefly(make_unavailable, reason, short_device_str, caplog):
+    device = fake_hidpp.Device(feature=SupportedFeature.UNIFIED_BATTERY)
+    assert SupportedFeature.UNIFIED_BATTERY in device.features  # feature table loaded, then lost
+    make_unavailable(device)
+
+    result = hidpp20.feature_request(device, SupportedFeature.UNIFIED_BATTERY)
+
+    assert result is None
+    # short message, no dump of the whole feature table
+    assert _hidpp20_records(caplog) == [(logging.WARNING, f"<TESTD>: feature UNIFIED BATTERY request failed: {reason}")]
 
 
 # get_keys is in test_hidpp20_complex
