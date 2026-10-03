@@ -25,6 +25,17 @@ NAME = "Solaar"
 APP_NAME = "plasmaar"
 APP_ID = "io.github.fredaime.plasmaar"
 
+UDEV_RULE = "42-plasmaar.rules"
+_UDEV_RULE_DIRS = ("/etc/udev/rules.d", "/usr/lib/udev/rules.d", "/usr/local/lib/udev/rules.d", "/lib/udev/rules.d")
+
+
+def udev_rule_installed() -> bool:
+    """Whether the udev rule giving the seated user access to Logitech devices is installed."""
+    import os
+
+    return any(os.path.isfile(os.path.join(directory, UDEV_RULE)) for directory in _UDEV_RULE_DIRS)
+
+
 try:
     __version__ = (
         subprocess.check_output(

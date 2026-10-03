@@ -35,7 +35,7 @@ def _data_files():
         yield dirname(mo), [mo]
 
     yield "share/applications", ["share/applications/solaar.desktop"]
-    yield "lib/udev/rules.d", ["rules.d/42-logitech-unify-permissions.rules"]
+    yield "lib/udev/rules.d", ["rules.d/42-plasmaar.rules"]
     yield "lib/systemd/user", ["share/systemd/user/plasmaard.service"]
     yield "share/metainfo", ["share/solaar/io.github.pwr_solaar.solaar.metainfo.xml"]
 
