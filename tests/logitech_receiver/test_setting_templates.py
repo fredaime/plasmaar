@@ -18,6 +18,8 @@
 The device uses some methods from the real device to set up data structures that are needed for some tests.
 """
 
+import logging
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -565,6 +567,24 @@ def test_validator_class_is_the_device_aware_subclass(sclass, base):
     assert sclass.validator_class is not base
     assert sclass.validator_class.__qualname__ == f"{sclass.__name__}.validator_class"
     assert "build" in vars(sclass.validator_class)
+
+
+def test_persistent_remappable_unrepresentable_mapping_reads_as_default_at_info(caplog):
+    """A K850 key reports a Power action mapping (0x09008200, System Sleep) that the Key/Consumer
+    choices cannot express. It is shown as Default and nothing is written to the device, so it is
+    informational and must not warn on every start."""
+    caplog.set_level(logging.DEBUG, logger="logitech_receiver.settings_templates")
+    key = common.NamedInt(0x50, "Left Button")
+    validator = settings_templates.PersistentRemappableAction.validator_class(
+        {key: special_keys.KEYS_KEYS_CONSUMER}, key_byte_count=2, byte_count=4
+    )
+
+    value = validator.validate_read(bytes.fromhex("0050" + "09008200"), key)
+
+    assert value == special_keys.KEYS_Default
+    records = [r for r in caplog.records if r.name == "logitech_receiver.settings_templates"]
+    assert [r.levelno for r in records] == [logging.INFO]
+    assert "9008200" in records[0].getMessage()
 
 
 responses_reprog_controls = [
