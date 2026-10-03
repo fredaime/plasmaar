@@ -7,8 +7,9 @@ import pytest
 from solaar import i18n
 
 
-def test_package_relative_location_is_the_source_share_dir():
-    share = Path(__file__).resolve().parents[2] / "share"
+def test_package_relative_location():
+    """lib/solaar/ -> share/ in a source checkout (the package is wherever solaar was imported from)."""
+    share = Path(i18n.__file__).resolve().parents[2] / "share"
 
     assert i18n._locale_locations()[-1] == str(share)
 
