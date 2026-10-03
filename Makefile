@@ -8,7 +8,7 @@ PIP_ARGS ?= .
 
 .PHONY: install_ubuntu install_macos
 .PHONY: install_apt install_brew install_pip
-.PHONY: install_udev install_udev_uinput reload_udev uninstall_udev install_user_service uninstall_user_service install_desktop_entry
+.PHONY: install_udev install_udev_uinput reload_udev uninstall_udev install_user_service uninstall_user_service install_desktop_entry compile_translations
 .PHONY: format lint test
 
 install_ubuntu: install_apt install_udev_uinput install_pip
@@ -69,7 +69,11 @@ install_desktop_entry:
 	install -D -m 644 share/applications/$(DESKTOP_ENTRY) $(USER_APPLICATIONS_DIR)/$(DESKTOP_ENTRY)
 	-update-desktop-database $(USER_APPLICATIONS_DIR)
 
-install_user_service: install_desktop_entry
+compile_translations:
+	@echo "Compiling translations into share/locale"
+	sh tools/po-compile.sh
+
+install_user_service: install_desktop_entry compile_translations
 	@test -n "$(PLASMAARD)" || { echo "plasmaard not found; install plasmaar or pass PLASMAARD=/path/to/plasmaard"; exit 1; }
 	@echo "Installing plasmaard user service running $(PLASMAARD)"
 	mkdir -p $(USER_UNIT_DIR)

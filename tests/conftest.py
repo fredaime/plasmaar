@@ -1,8 +1,14 @@
 import importlib
+import os
 
 from unittest import mock
 
 import pytest
+
+# Tests compare English strings, so never translate them: with compiled catalogues in share/locale
+# (make compile_translations) and a non-English locale, solaar.i18n would otherwise pick them up.
+# Set before any test module imports solaar (pytest loads this conftest first).
+os.environ["LANGUAGE"] = "C"
 
 
 @pytest.fixture(autouse=True)
