@@ -85,6 +85,7 @@ uninstall_user_service:
 # KWin script reporting the active window to plasmaard (Process rules on Plasma Wayland, docs/desktop-events.md)
 KWIN_SCRIPT := plasmaar-focus
 KWIN_SCRIPT_SOURCE := share/kwin/scripts/$(KWIN_SCRIPT)
+KWIN_SCRIPT_INSTALLED := $(HOME)/.local/share/kwin/scripts/$(KWIN_SCRIPT)
 
 .PHONY: install_kwin_script uninstall_kwin_script
 
@@ -94,7 +95,11 @@ install_kwin_script:
 	kpackagetool6 --type KWin/Script --upgrade $(KWIN_SCRIPT_SOURCE) 2>/dev/null || kpackagetool6 --type KWin/Script --install $(KWIN_SCRIPT_SOURCE)
 	kwriteconfig6 --file kwinrc --group Plugins --key $(KWIN_SCRIPT)Enabled true
 	-qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.unloadScript $(KWIN_SCRIPT)
-	qdbus6 org.kde.KWin /KWin reconfigure
+	@# A running KWin only loads enabled scripts at session start (reconfigure and Scripting.start() don't),
+	@# so load and run the installed copy now; from the next login KWin loads it from kwinrc by itself.
+	id=$$(qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.loadScript $(KWIN_SCRIPT_INSTALLED)/contents/code/main.js $(KWIN_SCRIPT)) \
+		&& qdbus6 org.kde.KWin /Scripting/Script$$id org.kde.kwin.Script.run
+	qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.isScriptLoaded $(KWIN_SCRIPT)
 
 uninstall_kwin_script:
 	kwriteconfig6 --file kwinrc --group Plugins --key $(KWIN_SCRIPT)Enabled --delete

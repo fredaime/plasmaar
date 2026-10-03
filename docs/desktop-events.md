@@ -98,13 +98,14 @@ condition used to work only on X11 (or on GNOME with Solaar's GNOME extension). 
 ### Install the KWin script
 
 ```sh
-make install_kwin_script      # installs (or upgrades) and enables it, then reloads KWin's scripts
+make install_kwin_script      # installs (or upgrades), enables and loads it
 make uninstall_kwin_script
 ```
 
 This installs the package under `~/.local/share/kwin/scripts/plasmaar-focus` with
 `kpackagetool6`, enables it in `kwinrc` (`[Plugins] plasmaar-focusEnabled=true`; it also shows in
-System Settings → Window Management → KWin Scripts) and asks KWin to reconfigure. Check it runs:
+System Settings → Window Management → KWin Scripts) and loads it into the running KWin (a running
+KWin only loads newly enabled scripts at the next login otherwise). Check it runs:
 
 ```sh
 qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.isScriptLoaded plasmaar-focus   # true

@@ -61,7 +61,9 @@ GTK installed, and the test suite stays green.
 
 **Status:** A1 done (plasmaard user service, Phase 0.6). A2 done: notifications carry the
 `io.github.fredaime.plasmaar` desktop entry. A4/A5 done as a `KdeShortcut` rule action plus
-automatic reload of `rules.yaml` — see [kde-actions.md](kde-actions.md).
+automatic reload of `rules.yaml` — see [kde-actions.md](kde-actions.md). A5 now also managed: `buttons.yaml` +
+`SetButtonAction` (#15). A6 haptic feedback on desktop events and A7 per-app rules through a KWin
+script done (#16) — see [desktop-events.md](desktop-events.md).
 
 Goal: the mouse feels native in Plasma before any settings UI exists. No C++. Estimate: 4–6 sessions.
 
