@@ -25,7 +25,8 @@ what the GTK application does around the listener, minus the windows:
 - pings devices and re-applies settings after resume from suspend,
 - saves the configuration and releases devices on SIGTERM/SIGINT,
 - exposes the D-Bus API for front-ends (solaar.dbus_service),
-- reloads the rules file (button actions, see docs/kde-actions.md) when it changes.
+- reloads the rules file (button actions, see docs/kde-actions.md) when it changes,
+- turns the managed button actions (buttons.yaml, solaar.buttons) into rules and follows their file.
 """
 
 from __future__ import annotations
@@ -46,6 +47,7 @@ from logitech_receiver.common import Alert
 from solaar import APP_NAME
 from solaar import UDEV_RULE
 from solaar import __version__
+from solaar import buttons
 from solaar import configuration
 from solaar import dbus
 from solaar import dbus_service
@@ -79,6 +81,8 @@ class Daemon:
         self.service = dbus_service.Service(on_name_lost=self._name_lost) if dbus_api else None
         self._rules_monitor = None
         self._rules_reload_id = None
+        self._buttons_monitor = None
+        self._buttons_reload_id = None
 
     # --- listener callbacks (called from listener threads) ---
 
@@ -152,6 +156,32 @@ class Daemon:
         diversion.reload_config_rule_file()
         return False
 
+    # --- button actions file (solaar.buttons) ---
+
+    def _start_buttons(self):
+        """Load the managed button actions, then follow edits of their file (SetButtonAction writes it too)."""
+        buttons.reload()
+        try:
+            self._buttons_monitor = Gio.File.new_for_path(buttons._file_path).monitor_file(
+                Gio.FileMonitorFlags.WATCH_MOVES, None
+            )
+            self._buttons_monitor.connect("changed", self._buttons_file_changed)
+        except Exception:
+            logger.warning("cannot watch %s for changes", buttons._file_path, exc_info=True)
+
+    def _buttons_file_changed(self, _monitor, _file, _other_file, event):
+        if event in (Gio.FileMonitorEvent.ATTRIBUTE_CHANGED, Gio.FileMonitorEvent.CHANGED):
+            return  # wait for CHANGES_DONE_HINT, or the create/delete/move that ends the save
+        if self._buttons_reload_id is None:  # debounce bursts of events from one save
+            self._buttons_reload_id = GLib.timeout_add(300, self._reload_buttons)
+
+    def _reload_buttons(self):
+        self._buttons_reload_id = None
+        for dev_id in sorted(buttons.reload()):  # nothing when the change was our own write
+            if self.service:
+                self.service.button_actions_changed(dev_id)
+        return False
+
     def _start(self):
         try:
             listener.start_all()
@@ -184,6 +214,7 @@ class Daemon:
         dbus.watch_suspend_resume(lambda: listener.ping_all(True))
         configuration.defer_saves = True
         self._watch_rules()
+        self._start_buttons()
         for signum in (signal.SIGTERM, signal.SIGINT):
             _unix_signal_add(GLib.PRIORITY_HIGH, signum, self.quit)
         GLib.idle_add(self._start)
@@ -192,6 +223,8 @@ class Daemon:
         finally:
             if self._rules_monitor is not None:
                 self._rules_monitor.cancel()
+            if self._buttons_monitor is not None:
+                self._buttons_monitor.cancel()
             listener.stop_all()  # also saves the configuration
             if self.service:
                 self.service.stop()

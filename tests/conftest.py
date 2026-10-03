@@ -56,3 +56,23 @@ def mock_notification_bus(monkeypatch):
     monkeypatch.setattr(desktop_notifications, "_proxy", proxy)
     monkeypatch.setattr(desktop_notifications, "_notifications", {})
     return proxy
+
+
+@pytest.fixture(autouse=True)
+def isolate_button_actions(tmp_path, monkeypatch):
+    """Point solaar.buttons at a throwaway buttons.yaml, start with no mappings and no captured defaults,
+    and restore the diversion rules afterwards, so no test reads the user's file or leaks generated rules.
+
+    Returns the path of the test's buttons.yaml (not created)."""
+    from logitech_receiver import diversion
+    from solaar import api
+    from solaar import buttons
+
+    path = tmp_path / "buttons.yaml"
+    monkeypatch.setattr(buttons, "_file_path", str(path))
+    monkeypatch.setattr(buttons, "_mappings", {})
+    monkeypatch.setattr(buttons, "_unreadable", False)
+    monkeypatch.setattr(api, "_defaults_captured", set())
+    for name in ("rules", "_generated_rules", "_loaded_rules"):
+        monkeypatch.setattr(diversion, name, getattr(diversion, name))
+    return path
