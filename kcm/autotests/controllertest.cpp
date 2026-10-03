@@ -374,6 +374,10 @@ private Q_SLOTS:
         delete m_mock;
         m_mock = nullptr;
 
+        // no systemd on the private bus: starting the service reports why it failed
+        controller.startService();
+        QTRY_VERIFY_WITH_TIMEOUT(!controller.notice().isEmpty(), Timeout);
+
         startMock();
         QTRY_COMPARE_WITH_TIMEOUT(controller.serviceState(), Controller::ServiceState::Running, Timeout);
         QTRY_VERIFY_WITH_TIMEOUT(controller.isReady(), Timeout);
