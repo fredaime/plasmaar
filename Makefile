@@ -8,7 +8,7 @@ PIP_ARGS ?= .
 
 .PHONY: install_ubuntu install_macos
 .PHONY: install_apt install_brew install_pip
-.PHONY: install_udev install_udev_uinput reload_udev uninstall_udev install_user_service uninstall_user_service
+.PHONY: install_udev install_udev_uinput reload_udev uninstall_udev install_user_service uninstall_user_service install_desktop_entry
 .PHONY: format lint test
 
 install_ubuntu: install_apt install_udev_uinput install_pip
@@ -61,7 +61,15 @@ reload_udev:
 PLASMAARD ?= $(shell command -v plasmaard)
 USER_UNIT_DIR := $(HOME)/.config/systemd/user
 
-install_user_service:
+DESKTOP_ENTRY := io.github.fredaime.plasmaar.desktop
+USER_APPLICATIONS_DIR := $(HOME)/.local/share/applications
+
+install_desktop_entry:
+	@echo "Installing $(DESKTOP_ENTRY) (notification identity)"
+	install -D -m 644 share/applications/$(DESKTOP_ENTRY) $(USER_APPLICATIONS_DIR)/$(DESKTOP_ENTRY)
+	-update-desktop-database $(USER_APPLICATIONS_DIR)
+
+install_user_service: install_desktop_entry
 	@test -n "$(PLASMAARD)" || { echo "plasmaard not found; install plasmaar or pass PLASMAARD=/path/to/plasmaard"; exit 1; }
 	@echo "Installing plasmaard user service running $(PLASMAARD)"
 	mkdir -p $(USER_UNIT_DIR)
@@ -71,7 +79,7 @@ install_user_service:
 
 uninstall_user_service:
 	-systemctl --user disable --now plasmaard.service
-	rm -f $(USER_UNIT_DIR)/plasmaard.service
+	rm -f $(USER_UNIT_DIR)/plasmaard.service $(USER_APPLICATIONS_DIR)/$(DESKTOP_ENTRY)
 	systemctl --user daemon-reload
 
 uninstall_udev:

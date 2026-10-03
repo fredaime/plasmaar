@@ -35,4 +35,15 @@ def test_notifications_use_plasmaar_identity():
     from logitech_receiver import desktop_notifications
 
     assert desktop_notifications.APP_NAME == "plasmaar"
-    assert desktop_notifications.DESKTOP_ENTRY == "plasmaar"
+    assert desktop_notifications.DESKTOP_ENTRY == "io.github.fredaime.plasmaar"
+
+
+def test_desktop_entry_file_matches_the_notification_hint():
+    from pathlib import Path
+
+    from logitech_receiver import desktop_notifications
+
+    entry = Path(__file__).resolve().parents[1] / "share" / "applications" / f"{desktop_notifications.DESKTOP_ENTRY}.desktop"
+    text = entry.read_text()
+    assert "Name=plasmaar" in text
+    assert "X-GNOME-UsesNotifications=true" in text

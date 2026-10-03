@@ -24,7 +24,8 @@ what the GTK application does around the listener, minus the windows:
 - shows desktop notifications for device alerts,
 - pings devices and re-applies settings after resume from suspend,
 - saves the configuration and releases devices on SIGTERM/SIGINT,
-- exposes the D-Bus API for front-ends (solaar.dbus_service).
+- exposes the D-Bus API for front-ends (solaar.dbus_service),
+- reloads the rules file (button actions, see docs/kde-actions.md) when it changes.
 """
 
 from __future__ import annotations
@@ -36,6 +37,7 @@ import sys
 
 import gi
 
+from gi.repository import Gio
 from gi.repository import GLib
 from logitech_receiver import desktop_notifications
 from logitech_receiver import diversion
@@ -75,6 +77,8 @@ class Daemon:
         self.loop = GLib.MainLoop()
         self.exit_code = 0
         self.service = dbus_service.Service(on_name_lost=self._name_lost) if dbus_api else None
+        self._rules_monitor = None
+        self._rules_reload_id = None
 
     # --- listener callbacks (called from listener threads) ---
 
@@ -124,6 +128,30 @@ class Daemon:
 
     # --- lifecycle ---
 
+    # --- rules file ---
+
+    def _watch_rules(self):
+        """Reload the rules when their file changes (editors often replace it, so watch the path)."""
+        try:
+            self._rules_monitor = Gio.File.new_for_path(diversion._file_path).monitor_file(
+                Gio.FileMonitorFlags.WATCH_MOVES, None
+            )
+            self._rules_monitor.connect("changed", self._rules_file_changed)
+        except Exception:
+            logger.warning("cannot watch %s for changes", diversion._file_path, exc_info=True)
+
+    def _rules_file_changed(self, _monitor, _file, _other_file, event):
+        if event in (Gio.FileMonitorEvent.ATTRIBUTE_CHANGED, Gio.FileMonitorEvent.CHANGED):
+            return  # wait for CHANGES_DONE_HINT, or the create/delete/move that ends the save
+        if self._rules_reload_id is None:  # debounce bursts of events from one save
+            self._rules_reload_id = GLib.timeout_add(300, self._reload_rules)
+
+    def _reload_rules(self):
+        self._rules_reload_id = None
+        logger.info("rules file changed, reloading %s", diversion._file_path)
+        diversion.reload_config_rule_file()
+        return False
+
     def _start(self):
         try:
             listener.start_all()
@@ -155,12 +183,15 @@ class Daemon:
         listener.setup_scanner(self.status_changed, self.setting_changed, self.error)
         dbus.watch_suspend_resume(lambda: listener.ping_all(True))
         configuration.defer_saves = True
+        self._watch_rules()
         for signum in (signal.SIGTERM, signal.SIGINT):
             _unix_signal_add(GLib.PRIORITY_HIGH, signum, self.quit)
         GLib.idle_add(self._start)
         try:
             self.loop.run()
         finally:
+            if self._rules_monitor is not None:
+                self._rules_monitor.cancel()
             listener.stop_all()  # also saves the configuration
             if self.service:
                 self.service.stop()
