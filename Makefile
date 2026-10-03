@@ -123,3 +123,37 @@ lint:
 test:
 	@echo "Running Solaar tests"
 	pytest -rs --cov --cov-report=xml
+
+# --- System Settings module (kcm/, see docs/kcm.md) ---------------------------------------------------
+# A user install: the plugin, its translations and desktop entry under KCM_PREFIX, plus a Plasma session
+# environment script that adds the plugin directory to QT_PLUGIN_PATH (effective at the next login).
+
+KCM_BUILD_DIR ?= kcm/build
+KCM_PREFIX ?= $(HOME)/.local
+PLASMA_ENV_DIR := $(HOME)/.config/plasma-workspace/env
+KCM_ENV_SCRIPT := $(PLASMA_ENV_DIR)/plasmaar-kcm.sh
+
+.PHONY: build_kcm test_kcm install_kcm uninstall_kcm
+
+build_kcm:
+	cmake -S kcm -B $(KCM_BUILD_DIR) -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=$(KCM_PREFIX)
+	cmake --build $(KCM_BUILD_DIR) --parallel
+
+test_kcm: build_kcm
+	ctest --test-dir $(KCM_BUILD_DIR) --output-on-failure
+
+install_kcm: build_kcm
+	cmake --install $(KCM_BUILD_DIR)
+	install -D -m 644 $(KCM_BUILD_DIR)/plasmaar-kcm.sh $(KCM_ENV_SCRIPT)
+	@echo
+	@echo "Installed. System Settings lists it under Input Devices after you log out and back in."
+	@echo "To try it right away:"
+	@echo "  sh -c '. $(KCM_ENV_SCRIPT) && exec kcmshell6 kcm_plasmaar'"
+
+uninstall_kcm:
+	@if [ -f $(KCM_BUILD_DIR)/install_manifest.txt ]; then \
+		cmake --build $(KCM_BUILD_DIR) --target uninstall; \
+	else \
+		echo "$(KCM_BUILD_DIR)/install_manifest.txt not found: nothing installed from this build directory"; \
+	fi
+	rm -f $(KCM_ENV_SCRIPT)
