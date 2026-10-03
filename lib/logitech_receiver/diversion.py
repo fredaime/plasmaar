@@ -638,14 +638,68 @@ def gnome_dbus_pointer_prog():
     return (wm_class,) if wm_class else None
 
 
+# The active window on Plasma Wayland, reported to plasmaard (SetActiveWindow) by the plasmaar-focus
+# KWin script on every focus change: None until it reports, () when no window is active, else
+# (resource class, resource name, process name) - matched like the X11 (instance, class, process name).
+_kwin_focus = None
+_kwin_focus_missing_warned = False
+
+
+def set_kwin_focus(resource_class, resource_name, pid):
+    global _kwin_focus
+    if not (resource_class or resource_name) and not pid > 0:
+        _kwin_focus = ()
+        return
+    try:
+        name = psutil.Process(pid).name() if pid > 0 else ""
+    except Exception:  # gone already, or not ours to inspect
+        name = ""
+    _kwin_focus = (resource_class or "", resource_name or "", name)
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("active window: %s", _kwin_focus)
+
+
+def kwin_focus_prog():
+    return _kwin_focus
+
+
+def _plasma_session():
+    return "KDE" in os.getenv("XDG_CURRENT_DESKTOP", "").split(":")
+
+
+def _focus_source_available():
+    """Whether the active window can be known: X11; on Wayland, KWin (Plasma) or the Solaar GNOME extension."""
+    if not wayland:
+        return x11_setup()
+    # on Plasma the KWin script reports the focus once plasmaard runs, typically after the rules are loaded
+    return kwin_focus_prog() is not None or _plasma_session() or bool(gnome_dbus_interface_setup())
+
+
+def wayland_focus_prog():
+    """The focused program on Wayland: as reported by KWin, else from the Solaar GNOME extension."""
+    global _kwin_focus_missing_warned
+    focus = kwin_focus_prog()
+    if focus is not None:
+        return focus
+    if _plasma_session():  # no GNOME Shell under KWin
+        if not _kwin_focus_missing_warned:
+            _kwin_focus_missing_warned = True
+            logger.warning(
+                "KWin has not reported the active window yet: Process conditions need the plasmaar-focus "
+                "KWin script (make install_kwin_script), which reports it to plasmaard's D-Bus API on every focus change"
+            )
+        return None
+    return gnome_dbus_focus_prog()
+
+
 class Process(Condition):
     def __init__(self, process, warn=True):
         self.process = process
-        if (not wayland and not x11_setup()) or (wayland and not gnome_dbus_interface_setup()):
+        if not _focus_source_available():
             if warn:
                 logger.warning(
-                    "rules can only access active process in X11 or in Wayland under GNOME with Solaar Gnome "
-                    "extension - %s",
+                    "rules can only access the active process in X11, in Plasma Wayland with the plasmaar-focus "
+                    "KWin script, or in GNOME Wayland with the Solaar GNOME extension - %s",
                     self,
                 )
         if not isinstance(process, str):
@@ -661,7 +715,7 @@ class Process(Condition):
             logger.debug("evaluate condition: %s", self)
         if not isinstance(self.process, str):
             return False
-        focus = x11_focus_prog() if not wayland else gnome_dbus_focus_prog()
+        focus = x11_focus_prog() if not wayland else wayland_focus_prog()
         result = any(bool(s and s.startswith(self.process)) for s in focus) if focus else None
         return result
 

@@ -15,6 +15,22 @@ def service(monkeypatch):
     return service_class.return_value
 
 
+@pytest.fixture(autouse=True)
+def desktop_events(monkeypatch):
+    """Never watch the real session bus: replace the desktop event sources with a mock."""
+    sources_class = mock.Mock(name="DesktopEvents")
+    monkeypatch.setattr(daemon.desktop_events, "DesktopEvents", sources_class)
+    return sources_class
+
+
+@pytest.fixture(autouse=True)
+def haptics(monkeypatch):
+    """No worker thread and no device writes: replace the haptic player with a mock."""
+    haptics_class = mock.Mock(name="HapticEvents")
+    monkeypatch.setattr(daemon.haptic_events, "HapticEvents", haptics_class)
+    return haptics_class.return_value
+
+
 @pytest.fixture
 def run_idle_now(monkeypatch):
     """Run GLib.idle_add callbacks immediately instead of on the main loop."""
@@ -238,3 +254,71 @@ def test_run_watches_the_rules_file(lifecycle, monkeypatch):
     d.run()
 
     watch.assert_called_once()
+
+
+# --- haptic feedback on desktop events ---
+
+
+def test_run_starts_and_stops_desktop_events(lifecycle, desktop_events, haptics):
+    d = daemon.Daemon()
+    lifecycle.start_all.side_effect = d.quit
+
+    d.run()
+
+    desktop_events.assert_called_once_with(d._desktop_event)
+    desktop_events.return_value.start.assert_called_once()
+    desktop_events.return_value.stop.assert_called_once()
+    haptics.start.assert_called_once()
+    haptics.stop.assert_called_once()
+
+
+def test_desktop_events_work_without_the_dbus_api(lifecycle, desktop_events, haptics):
+    """The sources only listen on the session bus; they do not need our own service."""
+    d = daemon.Daemon(dbus_api=False)
+    lifecycle.start_all.side_effect = d.quit
+
+    d.run()
+
+    desktop_events.return_value.start.assert_called_once()
+    haptics.start.assert_called_once()
+
+
+def test_no_haptic_events_option(lifecycle, desktop_events, haptics):
+    d = daemon.Daemon(haptics=False)
+    lifecycle.start_all.side_effect = d.quit
+
+    d.run()
+
+    assert d.haptic_events is None and d.desktop_events is None
+    desktop_events.assert_not_called()
+    haptics.start.assert_not_called()
+
+
+def test_main_passes_the_no_haptic_events_option(monkeypatch):
+    daemon_class = mock.Mock(name="Daemon")
+    daemon_class.return_value.run.return_value = 0
+    monkeypatch.setattr(daemon, "Daemon", daemon_class)
+
+    assert daemon.main(["--no-haptic-events"]) == 0
+
+    daemon_class.assert_called_once_with(notifications=True, dbus_api=True, haptics=False)
+
+
+def test_desktop_event_plays_haptics(haptics):
+    daemon.Daemon()._desktop_event("desktop_switch")
+
+    haptics.fire.assert_called_once_with("desktop_switch")
+
+
+def test_status_changed_checks_the_battery(run_idle_now, show, haptics):
+    device = mock.Mock(name="device", kind="mouse")
+
+    daemon.Daemon().status_changed(device, Alert.NONE, None)
+
+    haptics.battery_changed.assert_called_once_with(device)
+
+
+def test_status_changed_skips_receivers_for_battery(run_idle_now, show, haptics):
+    daemon.Daemon().status_changed(mock.Mock(name="receiver", kind=None), Alert.NONE, None)
+
+    haptics.battery_changed.assert_not_called()

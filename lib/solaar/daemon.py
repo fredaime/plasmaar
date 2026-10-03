@@ -26,7 +26,9 @@ what the GTK application does around the listener, minus the windows:
 - saves the configuration and releases devices on SIGTERM/SIGINT,
 - exposes the D-Bus API for front-ends (solaar.dbus_service),
 - reloads the rules file (button actions, see docs/kde-actions.md) when it changes,
-- turns the managed button actions (buttons.yaml, solaar.buttons) into rules and follows their file.
+- turns the managed button actions (buttons.yaml, solaar.buttons) into rules and follows their file,
+- plays haptic feedback on desktop events: notifications, virtual-desktop switches and low
+  batteries (solaar.haptic_events, solaar.desktop_events, docs/desktop-events.md).
 """
 
 from __future__ import annotations
@@ -51,6 +53,8 @@ from solaar import buttons
 from solaar import configuration
 from solaar import dbus
 from solaar import dbus_service
+from solaar import desktop_events
+from solaar import haptic_events
 from solaar import listener
 from solaar import udev_rule_installed
 from solaar.errors import ErrorReason
@@ -74,11 +78,14 @@ class Daemon:
     The listener invokes the callbacks from its device threads; they are
     marshalled onto the main loop with GLib.idle_add before touching state."""
 
-    def __init__(self, notifications: bool = True, dbus_api: bool = True):
+    def __init__(self, notifications: bool = True, dbus_api: bool = True, haptics: bool = True):
         self.notifications = notifications
         self.loop = GLib.MainLoop()
         self.exit_code = 0
         self.service = dbus_service.Service(on_name_lost=self._name_lost) if dbus_api else None
+        # independent of the D-Bus API: the event sources only listen on the session bus
+        self.haptic_events = haptic_events.HapticEvents() if haptics else None
+        self.desktop_events = desktop_events.DesktopEvents(self._desktop_event) if haptics else None
         self._rules_monitor = None
         self._rules_reload_id = None
         self._buttons_monitor = None
@@ -104,9 +111,15 @@ class Daemon:
         logger.debug("status changed: %s (%s) %s", device, alert, reason)
         if self.notifications and alert & (Alert.NOTIFICATION | Alert.ATTENTION):
             desktop_notifications.show(device, reason)
-        if self.service and device.kind is not None:  # receivers have no kind; their devices report separately
-            self.service.device_changed(device)
+        if device.kind is not None:  # receivers have no kind; their devices report separately
+            if self.service:
+                self.service.device_changed(device)
+            if self.haptic_events:
+                self.haptic_events.battery_changed(device)
         return False
+
+    def _desktop_event(self, event):
+        self.haptic_events.fire(event)
 
     def _record_setting(self, device, setting_class, values):
         """Record a change made on the device itself; this does not write to the device."""
@@ -210,6 +223,9 @@ class Daemon:
             desktop_notifications.init()
         if self.service:
             self.service.start()
+        if self.haptic_events:
+            self.haptic_events.start()
+            self.desktop_events.start()
         listener.setup_scanner(self.status_changed, self.setting_changed, self.error)
         dbus.watch_suspend_resume(lambda: listener.ping_all(True))
         configuration.defer_saves = True
@@ -225,7 +241,11 @@ class Daemon:
                 self._rules_monitor.cancel()
             if self._buttons_monitor is not None:
                 self._buttons_monitor.cancel()
+            if self.desktop_events:
+                self.desktop_events.stop()
             listener.stop_all()  # also saves the configuration
+            if self.haptic_events:
+                self.haptic_events.stop()
             if self.service:
                 self.service.stop()
             desktop_notifications.uninit()
@@ -239,6 +259,7 @@ def _parse_arguments(argv=None):
     parser.add_argument("-d", "--debug", action="count", default=0, help="print logging messages, -dd for more")
     parser.add_argument("--no-notifications", action="store_true", help="do not show desktop notifications")
     parser.add_argument("--no-dbus", action="store_true", help="do not provide the D-Bus API")
+    parser.add_argument("--no-haptic-events", action="store_true", help="do not play haptic feedback on desktop events")
     parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
     return parser.parse_args(argv)
 
@@ -251,7 +272,7 @@ def _setup_logging(debug: int):
 def main(argv=None) -> int:
     args = _parse_arguments(argv)
     _setup_logging(args.debug)
-    return Daemon(notifications=not args.no_notifications, dbus_api=not args.no_dbus).run()
+    return Daemon(notifications=not args.no_notifications, dbus_api=not args.no_dbus, haptics=not args.no_haptic_events).run()
 
 
 if __name__ == "__main__":
