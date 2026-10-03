@@ -553,7 +553,6 @@ class OnboardProfiles(settings.Setting):
     for i in range(1, 16):
         choices_universe[i] = f"Profile {i}"
         choices_universe[i + 0x100] = f"Read-Only Profile {i}"
-    validator_class = settings_validator.ChoicesValidator
 
     class rw_class:
         def __init__(self, feature):
@@ -3135,7 +3134,6 @@ class BrightnessControl(settings.Setting):
     description = _("Control overall brightness")
     feature = _F.BRIGHTNESS_CONTROL
     rw_options = {"read_fnid": 0x10, "write_fnid": 0x20}
-    validator_class = settings_validator.RangeValidator
 
     def __init__(self, device, rw, validator):
         super().__init__(device, rw, validator)

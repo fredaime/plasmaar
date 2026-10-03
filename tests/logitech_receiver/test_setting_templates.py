@@ -550,6 +550,23 @@ def test_simple_template(test, mocker, mock_gethostname):
     fake_hidpp.match_requests(tst.matched_calls, test.responses, spy_request.call_args_list)
 
 
+@pytest.mark.parametrize(
+    "sclass, base",
+    [
+        (settings_templates.OnboardProfiles, settings_validator.ChoicesValidator),
+        (settings_templates.BrightnessControl, settings_validator.RangeValidator),
+    ],
+)
+def test_validator_class_is_the_device_aware_subclass(sclass, base):
+    """These settings build their validator from what the device reports (profile headers,
+    brightness range), so validator_class must be their nested subclass with its own build(),
+    not the bare base validator."""
+    assert issubclass(sclass.validator_class, base)
+    assert sclass.validator_class is not base
+    assert sclass.validator_class.__qualname__ == f"{sclass.__name__}.validator_class"
+    assert "build" in vars(sclass.validator_class)
+
+
 responses_reprog_controls = [
     fake_hidpp.Response("03", 0x0500),
     fake_hidpp.Response("00500038010001010400000000000000", 0x0510, "00"),  # left button
