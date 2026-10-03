@@ -1,0 +1,564 @@
+# French translation of kcm_plasmaar, the plasmaar System Settings module.
+# SPDX-FileCopyrightText: 2026 plasmaar contributors
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kcm_plasmaar\n"
+"Report-Msgid-Bugs-To: https://github.com/fredaime/plasmaar/issues\n"
+"POT-Creation-Date: 2026-10-03 00:00+0200\n"
+"PO-Revision-Date: 2026-10-03 00:00+0200\n"
+"Last-Translator: plasmaar contributors\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: src/controller.cpp:525
+msgid "The device is switched off, asleep or out of range."
+msgstr "Le périphérique est éteint, en veille ou hors de portée."
+
+#: src/controller.cpp:528
+msgid "The device is no longer connected."
+msgstr "Le périphérique n'est plus connecté."
+
+#: src/controller.cpp:531
+msgid "The device no longer has this setting."
+msgstr "Le périphérique n'a plus ce réglage."
+
+#: src/controller.cpp:534
+msgid "The value was refused: %1"
+msgstr "La valeur a été refusée : %1"
+
+#: src/controller.cpp:537
+msgid "The device does not support this."
+msgstr "Le périphérique ne prend pas cela en charge."
+
+#: src/controller.cpp:540
+msgid "The plasmaard service is not running."
+msgstr "Le service plasmaard n'est pas lancé."
+
+#: src/controller.cpp:543
+msgid "The plasmaard service did not answer in time."
+msgstr "Le service plasmaard n'a pas répondu à temps."
+
+#: src/controller.cpp:598
+msgid "One change could not be applied:"
+msgid_plural "%1 changes could not be applied:"
+msgstr[0] "Une modification n'a pas pu être appliquée :"
+msgstr[1] "%1 modifications n'ont pas pu être appliquées :"
+
+#: src/controller.cpp:616
+msgctxt "@info failed write: setting label, error message"
+msgid "%1: %2"
+msgstr "%1 : %2"
+
+#: src/controller.cpp:683
+msgid "Could not play the effect: %1"
+msgstr "Impossible de jouer l'effet : %1"
+
+#: src/controller.cpp:693
+msgid "Could not start plasmaard: %1"
+msgstr "Impossible de démarrer plasmaard : %1"
+
+#: src/controller.cpp:710
+msgctxt "@label a KDE action that is not in the list: action name, component"
+msgid "%1 (%2)"
+msgstr "%1 (%2)"
+
+#: ui/ActionField.qml:35
+msgctxt "@action:button"
+msgid "Choose an Action…"
+msgstr "Choisir une action…"
+
+#: ui/ActionField.qml:41
+msgctxt "@info:tooltip KDE action: component, action id"
+msgid "%1 › %2"
+msgstr "%1 › %2"
+
+#: ui/ActionField.qml:49
+msgctxt "@action:button"
+msgid "Remove Action"
+msgstr "Retirer l'action"
+
+#: ui/ButtonsPage.qml:37
+msgctxt "@label:chooser gesture direction"
+msgid "Swipe up:"
+msgstr "Glisser vers le haut :"
+
+#: ui/ButtonsPage.qml:38
+msgctxt "@label:chooser gesture direction"
+msgid "Swipe down:"
+msgstr "Glisser vers le bas :"
+
+#: ui/ButtonsPage.qml:39
+msgctxt "@label:chooser gesture direction"
+msgid "Swipe left:"
+msgstr "Glisser vers la gauche :"
+
+#: ui/ButtonsPage.qml:40
+msgctxt "@label:chooser gesture direction"
+msgid "Swipe right:"
+msgstr "Glisser vers la droite :"
+
+#: ui/ButtonsPage.qml:41
+msgctxt "@label:chooser gesture button pressed and released without moving"
+msgid "Click without swiping:"
+msgstr "Clic sans glisser :"
+
+#: ui/ButtonsPage.qml:47
+msgctxt "@item:inlistbox button mode"
+msgid "Normal (its usual function)"
+msgstr "Normal (sa fonction habituelle)"
+
+#: ui/ButtonsPage.qml:49
+msgctxt "@item:inlistbox button mode"
+msgid "Run an action when pressed"
+msgstr "Lancer une action à l'appui"
+
+#: ui/ButtonsPage.qml:51
+msgctxt "@item:inlistbox button mode"
+msgid "Gestures: hold, swipe and release"
+msgstr "Gestes : maintenir, glisser, relâcher"
+
+#: ui/ButtonsPage.qml:68
+msgctxt "@info:placeholder"
+msgid "Button actions need a newer plasmaard"
+msgstr "Les actions des boutons nécessitent un plasmaard plus récent"
+
+#: ui/ButtonsPage.qml:70
+msgctxt "@info:placeholder"
+msgid "The running plasmaard service cannot configure button actions yet. Update it, or map the buttons in <filename>~/.config/plasmaar/rules.yaml</filename> for now."
+msgstr "Le service plasmaard lancé ne sait pas encore configurer les actions des boutons. Mettez-le à jour, ou en attendant associez les boutons dans <filename>~/.config/plasmaar/rules.yaml</filename>."
+
+#: ui/ButtonsPage.qml:77
+msgctxt "@info"
+msgid "The button actions could not be read."
+msgstr "Les actions des boutons n'ont pas pu être lues."
+
+#: ui/ButtonsPage.qml:86
+msgctxt "@info"
+msgid "The list of KDE actions is not available, so actions cannot be chosen right now."
+msgstr "La liste des actions de KDE n'est pas disponible : impossible de choisir une action pour l'instant."
+
+#: ui/ButtonsPage.qml:98
+msgctxt "@info"
+msgid "Buttons set to an action or to gestures run KDE Plasma actions instead of their usual function. For a gesture, hold the button, move the mouse in one direction and release it."
+msgstr "Les boutons réglés sur une action ou sur des gestes lancent des actions de KDE Plasma à la place de leur fonction habituelle. Pour un geste, maintenez le bouton, déplacez la souris dans une direction et relâchez-le."
+
+#: ui/ButtonsPage.qml:99
+msgctxt "@info"
+msgid "Keys set to an action run a KDE Plasma action instead of their usual function."
+msgstr "Les touches réglées sur une action lancent une action de KDE Plasma à la place de leur fonction habituelle."
+
+#: ui/ButtonsPage.qml:133
+msgctxt "@label:listbox"
+msgid "Behavior:"
+msgstr "Comportement :"
+
+#: ui/ButtonsPage.qml:158
+msgctxt "@label:chooser"
+msgid "Action:"
+msgstr "Action :"
+
+#: ui/ButtonsPage.qml:180
+msgctxt "@info:placeholder button, gesture direction"
+msgid "%1, %2"
+msgstr "%1, %2"
+
+#: ui/DeviceHeader.qml:49
+msgctxt "@info battery state"
+msgid "discharging"
+msgstr "en décharge"
+
+#: ui/DeviceHeader.qml:52
+msgctxt "@info battery state"
+msgid "charging"
+msgstr "en charge"
+
+#: ui/DeviceHeader.qml:54
+msgctxt "@info battery state"
+msgid "fully charged"
+msgstr "chargée"
+
+#: ui/DeviceHeader.qml:56
+msgctxt "@info battery state"
+msgid "almost full"
+msgstr "presque pleine"
+
+#: ui/DeviceHeader.qml:60
+msgctxt "@info battery state"
+msgid "battery error"
+msgstr "erreur de batterie"
+
+#: ui/DeviceHeader.qml:67
+msgctxt "@item:inlistbox device that is switched off"
+msgid "%1 (offline)"
+msgstr "%1 (hors ligne)"
+
+#: ui/DeviceHeader.qml:101
+msgctxt "@info device state"
+msgid "Connected"
+msgstr "Connecté"
+
+#: ui/DeviceHeader.qml:101
+msgctxt "@info device state"
+msgid "Offline: switched off, asleep or out of range"
+msgstr "Hors ligne : éteint, en veille ou hors de portée"
+
+#: ui/DeviceHeader.qml:117
+msgctxt "@info battery level"
+msgid "%1%"
+msgstr "%1 %"
+
+#: ui/DeviceHeader.qml:119
+msgctxt "@info battery level, state"
+msgid "%1 (%2)"
+msgstr "%1 (%2)"
+
+#: ui/DeviceHeader.qml:136
+msgctxt "@info device id"
+msgid "Model %1"
+msgstr "Modèle %1"
+
+#: ui/DeviceHeader.qml:139
+msgctxt "@info device id"
+msgid "Unit %1"
+msgstr "Unité %1"
+
+#: ui/DeviceHeader.qml:142
+msgctxt "@info device id"
+msgid "Serial %1"
+msgstr "N° de série %1"
+
+#: ui/DeviceHeader.qml:145
+msgctxt "@info protocol version"
+msgid "HID++ %1"
+msgstr "HID++ %1"
+
+#: ui/DeviceHeader.qml:170
+msgctxt "@info:tooltip"
+msgid "Choose the device to configure"
+msgstr "Choisir le périphérique à configurer"
+
+#: ui/DeviceHeader.qml:171
+msgctxt "@info:tooltip"
+msgid "Apply or reset your changes before switching to another device"
+msgstr "Appliquez ou annulez vos modifications avant de passer à un autre périphérique"
+
+#: ui/HapticsPage.qml:28
+msgctxt "@item haptic waveform"
+msgid "Sharp state change"
+msgstr "Changement d'état net"
+
+#: ui/HapticsPage.qml:30
+msgctxt "@item haptic waveform"
+msgid "Damped state change"
+msgstr "Changement d'état amorti"
+
+#: ui/HapticsPage.qml:32
+msgctxt "@item haptic waveform"
+msgid "Sharp collision"
+msgstr "Choc net"
+
+#: ui/HapticsPage.qml:34
+msgctxt "@item haptic waveform"
+msgid "Damped collision"
+msgstr "Choc amorti"
+
+#: ui/HapticsPage.qml:36
+msgctxt "@item haptic waveform"
+msgid "Subtle collision"
+msgstr "Choc léger"
+
+#: ui/HapticsPage.qml:38
+msgctxt "@item haptic waveform"
+msgid "Whisper collision"
+msgstr "Choc murmuré"
+
+#: ui/HapticsPage.qml:40
+msgctxt "@item haptic waveform"
+msgid "Happy alert"
+msgstr "Alerte joyeuse"
+
+#: ui/HapticsPage.qml:42
+msgctxt "@item haptic waveform"
+msgid "Angry alert"
+msgstr "Alerte agacée"
+
+#: ui/HapticsPage.qml:44
+msgctxt "@item haptic waveform"
+msgid "Completed"
+msgstr "Terminé"
+
+#: ui/HapticsPage.qml:46
+msgctxt "@item haptic waveform"
+msgid "Square"
+msgstr "Carré"
+
+#: ui/HapticsPage.qml:48
+msgctxt "@item haptic waveform"
+msgid "Wave"
+msgstr "Vague"
+
+#: ui/HapticsPage.qml:50
+msgctxt "@item haptic waveform"
+msgid "Firework"
+msgstr "Feu d'artifice"
+
+#: ui/HapticsPage.qml:52
+msgctxt "@item haptic waveform"
+msgid "Mad"
+msgstr "Colère"
+
+#: ui/HapticsPage.qml:54
+msgctxt "@item haptic waveform"
+msgid "Knock"
+msgstr "Toc-toc"
+
+#: ui/HapticsPage.qml:56
+msgctxt "@item haptic waveform"
+msgid "Jingle"
+msgstr "Ritournelle"
+
+#: ui/HapticsPage.qml:58
+msgctxt "@item haptic waveform"
+msgid "Ringing"
+msgstr "Sonnerie"
+
+#: ui/HapticsPage.qml:79
+msgctxt "@info"
+msgid "The device is offline. Switch it on or wake it up to feel the effects."
+msgstr "Le périphérique est hors ligne. Allumez-le ou réveillez-le pour ressentir les effets."
+
+#: ui/HapticsPage.qml:93
+msgctxt "@label:slider"
+msgid "Intensity:"
+msgstr "Intensité :"
+
+#: ui/HapticsPage.qml:99
+msgctxt "@title:group"
+msgid "Try the Effects"
+msgstr "Essayer les effets"
+
+#: ui/HapticsPage.qml:104
+msgctxt "@label"
+msgid "Play:"
+msgstr "Jouer :"
+
+#: ui/HapticsPage.qml:127
+msgctxt "@title:group"
+msgid "Desktop Events"
+msgstr "Événements du bureau"
+
+#: ui/HapticsPage.qml:144
+msgctxt "@label:listbox desktop event"
+msgid "%1:"
+msgstr "%1 :"
+
+#: ui/HapticsPage.qml:152
+msgctxt "@item:inlistbox no haptic effect"
+msgid "None"
+msgstr "Aucun"
+
+#: ui/HapticsPage.qml:167
+msgctxt "@action:button"
+msgid "Try It"
+msgstr "Essayer"
+
+#: ui/HapticsPage.qml:194
+msgctxt "@info"
+msgid "Haptic feedback for desktop events needs a newer plasmaard."
+msgstr "Le retour haptique pour les événements du bureau nécessite un plasmaard plus récent."
+
+#: ui/KeyCell.qml:49 ui/KeyCell.qml:68 ui/KeyCell.qml:84
+msgctxt "@label accessible name: setting, key"
+msgid "%1, %2"
+msgstr "%1, %2"
+
+#: ui/KeyCell.qml:62
+msgctxt "@title:window setting, key"
+msgid "%1: %2"
+msgstr "%1 : %2"
+
+#: ui/KeyMapTable.qml:98
+msgctxt "@title:group"
+msgid "Keys and Buttons"
+msgstr "Touches et boutons"
+
+#: ui/KeyMapTable.qml:163
+msgctxt "@label:key name in the key table"
+msgid "%1:"
+msgstr "%1 :"
+
+#: ui/PickerDialog.qml:21
+msgctxt "@info:placeholder search field: what is being chosen"
+msgid "Search: %1"
+msgstr "Rechercher : %1"
+
+#: ui/PickerDialog.qml:64
+msgctxt "@info:placeholder"
+msgid "No match"
+msgstr "Aucun résultat"
+
+#: ui/SettingRow.qml:55
+msgctxt "@info setting value"
+msgid "On"
+msgstr "Activé"
+
+#: ui/SettingRow.qml:55
+msgctxt "@info setting value"
+msgid "Off"
+msgstr "Désactivé"
+
+#: ui/SettingRow.qml:62
+msgctxt "@info no flag is set"
+msgid "None"
+msgstr "Aucune"
+
+#: ui/SettingRow.qml:70
+msgctxt "@label:setting form label"
+msgid "%1:"
+msgstr "%1 :"
+
+#: ui/SettingRow.qml:236
+msgctxt "@info setting value that cannot be changed here"
+msgid "%1 (read-only)"
+msgstr "%1 (lecture seule)"
+
+#: ui/SettingRow.qml:236
+msgctxt "@info"
+msgid "Read-only"
+msgstr "Lecture seule"
+
+#: ui/SettingRow.qml:247
+msgctxt "@info"
+msgid "Could not be read: %1"
+msgstr "Lecture impossible : %1"
+
+#: ui/SettingRow.qml:248
+msgctxt "@info"
+msgid "Unknown while the device is offline"
+msgstr "Inconnu tant que le périphérique est hors ligne"
+
+#: ui/SettingsPage.qml:26
+msgctxt "@title:group"
+msgid "Scroll Wheel"
+msgstr "Molette"
+
+#: ui/SettingsPage.qml:27
+msgctxt "@title:group"
+msgid "Thumb Wheel"
+msgstr "Molette de pouce"
+
+#: ui/SettingsPage.qml:28
+msgctxt "@title:group"
+msgid "Pointer"
+msgstr "Pointeur"
+
+#: ui/SettingsPage.qml:29
+msgctxt "@title:group"
+msgid "Buttons"
+msgstr "Boutons"
+
+#: ui/SettingsPage.qml:30
+msgctxt "@title:group"
+msgid "Keyboard"
+msgstr "Clavier"
+
+#: ui/SettingsPage.qml:31
+msgctxt "@title:group"
+msgid "Lighting"
+msgstr "Éclairage"
+
+#: ui/SettingsPage.qml:32
+msgctxt "@title:group"
+msgid "Audio"
+msgstr "Audio"
+
+#: ui/SettingsPage.qml:33
+msgctxt "@title:group"
+msgid "Connection"
+msgstr "Connexion"
+
+#: ui/SettingsPage.qml:34
+msgctxt "@title:group"
+msgid "Other Settings"
+msgstr "Autres réglages"
+
+#: ui/SettingsPage.qml:88
+msgctxt "@info"
+msgid "The device is offline. These are the last known values; switch it on or wake it up to change them."
+msgstr "Le périphérique est hors ligne. Voici les dernières valeurs connues ; allumez-le ou réveillez-le pour les modifier."
+
+#: ui/SettingsPage.qml:95
+msgctxt "@info"
+msgid "The settings could not be read: %1"
+msgstr "Les réglages n'ont pas pu être lus : %1"
+
+#: ui/SettingsPage.qml:103
+msgctxt "@info:placeholder"
+msgid "This device has no settings"
+msgstr "Ce périphérique n'a aucun réglage"
+
+#: ui/main.qml:26
+msgctxt "@title:tab"
+msgid "Settings"
+msgstr "Réglages"
+
+#: ui/main.qml:34
+msgctxt "@title:tab keyboard keys"
+msgid "Keys"
+msgstr "Touches"
+
+#: ui/main.qml:34
+msgctxt "@title:tab"
+msgid "Buttons"
+msgstr "Boutons"
+
+#: ui/main.qml:42
+msgctxt "@title:tab"
+msgid "Haptic Feedback"
+msgstr "Retour haptique"
+
+#: ui/main.qml:190
+msgctxt "@info:placeholder"
+msgid "Connecting to plasmaard…"
+msgstr "Connexion à plasmaard…"
+
+#: ui/main.qml:198
+msgctxt "@info:placeholder"
+msgid "The plasmaard service is not running"
+msgstr "Le service plasmaard n'est pas lancé"
+
+#: ui/main.qml:200
+msgctxt "@info:placeholder"
+msgid "Logitech devices are managed by the plasmaard user service. Start it here, or in a terminal with <command>systemctl --user start plasmaard</command>.<nl/>It starts with your Plasma session once it is installed with <command>make install_user_service</command>."
+msgstr "Les périphériques Logitech sont gérés par le service utilisateur plasmaard. Démarrez-le ici, ou dans un terminal avec <command>systemctl --user start plasmaard</command>.<nl/>Il démarre avec votre session Plasma une fois installé avec <command>make install_user_service</command>."
+
+#: ui/main.qml:203
+msgctxt "@action:button"
+msgid "Start plasmaard"
+msgstr "Démarrer plasmaard"
+
+#: ui/main.qml:213
+msgctxt "@info:placeholder"
+msgid "No Logitech device found"
+msgstr "Aucun périphérique Logitech trouvé"
+
+#: ui/main.qml:214
+msgctxt "@info:placeholder"
+msgid "Switch your mouse or keyboard on, or pair it with this computer over Bluetooth or a Logitech receiver."
+msgstr "Allumez votre souris ou votre clavier, ou appairez-le avec cet ordinateur en Bluetooth ou via un récepteur Logitech."
+
+#: ui/main.qml:222
+msgctxt "@info:placeholder"
+msgid "Search KDE actions…"
+msgstr "Rechercher une action de KDE…"
+
+#: ui/main.qml:227
+msgctxt "@info:placeholder"
+msgid "Search…"
+msgstr "Rechercher…"

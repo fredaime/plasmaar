@@ -1,0 +1,3 @@
+# Installed by `make install_kcm` into ~/.config/plasma-workspace/env/, which Plasma sources at login:
+# lets System Settings find the plasmaar module installed under @CMAKE_INSTALL_PREFIX@.
+export QT_PLUGIN_PATH="@KDE_INSTALL_FULL_PLUGINDIR@${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"

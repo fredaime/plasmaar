@@ -1,0 +1,1343 @@
+{
+ "comment": "Mock data for tools/mock_plasmaard.py, captured read-only from a real plasmaard (MX Master 4 + K850 + MX Anywhere 3S) and kglobalaccel on 2026-10-03.",
+ "shared_choices": {
+  "@k850-remap": [
+   {"value": 2147483647, "name": "Default"},
+   {"value": 0, "name": "No Output (only as default)"},
+   {"value": 16777216, "name": "No Output"},
+   {"value": 16778240, "name": "A"},
+   {"value": 16778496, "name": "B"},
+   {"value": 16778752, "name": "C"},
+   {"value": 16779008, "name": "D"},
+   {"value": 16779264, "name": "E"},
+   {"value": 16779520, "name": "F"},
+   {"value": 16779776, "name": "G"},
+   {"value": 16780032, "name": "H"},
+   {"value": 16780288, "name": "I"},
+   {"value": 16780544, "name": "J"},
+   {"value": 16780800, "name": "K"},
+   {"value": 16781056, "name": "L"},
+   {"value": 16781312, "name": "M"},
+   {"value": 16781568, "name": "N"},
+   {"value": 16781824, "name": "O"},
+   {"value": 16782080, "name": "P"},
+   {"value": 16782336, "name": "Q"},
+   {"value": 16782592, "name": "R"},
+   {"value": 16782848, "name": "S"},
+   {"value": 16783104, "name": "T"},
+   {"value": 16783360, "name": "U"},
+   {"value": 16783616, "name": "V"},
+   {"value": 16783872, "name": "W"},
+   {"value": 16784128, "name": "X"},
+   {"value": 16784384, "name": "Y"},
+   {"value": 16784640, "name": "Z"},
+   {"value": 16784896, "name": "1"},
+   {"value": 16785152, "name": "2"},
+   {"value": 16785408, "name": "3"},
+   {"value": 16785664, "name": "4"},
+   {"value": 16785920, "name": "5"},
+   {"value": 16786176, "name": "6"},
+   {"value": 16786432, "name": "7"},
+   {"value": 16786688, "name": "8"},
+   {"value": 16786944, "name": "9"},
+   {"value": 16787200, "name": "0"},
+   {"value": 16787456, "name": "ENTER"},
+   {"value": 16787712, "name": "ESC"},
+   {"value": 16787968, "name": "BACKSPACE"},
+   {"value": 16788224, "name": "TAB"},
+   {"value": 16788480, "name": "SPACE"},
+   {"value": 16788736, "name": "MINUS"},
+   {"value": 16788992, "name": "EQUAL"},
+   {"value": 16789248, "name": "LEFTBRACE"},
+   {"value": 16789504, "name": "RIGHTBRACE"},
+   {"value": 16789760, "name": "BACKSLASH"},
+   {"value": 16790016, "name": "HASHTILDE"},
+   {"value": 16790272, "name": "SEMICOLON"},
+   {"value": 16790528, "name": "APOSTROPHE"},
+   {"value": 16790784, "name": "GRAVE"},
+   {"value": 16791040, "name": "COMMA"},
+   {"value": 16791296, "name": "DOT"},
+   {"value": 16791552, "name": "SLASH"},
+   {"value": 16791808, "name": "CAPSLOCK"},
+   {"value": 16792064, "name": "F1"},
+   {"value": 16792320, "name": "F2"},
+   {"value": 16792576, "name": "F3"},
+   {"value": 16792832, "name": "F4"},
+   {"value": 16793088, "name": "F5"},
+   {"value": 16793344, "name": "F6"},
+   {"value": 16793600, "name": "F7"},
+   {"value": 16793856, "name": "F8"},
+   {"value": 16794112, "name": "F9"},
+   {"value": 16794368, "name": "F10"},
+   {"value": 16794624, "name": "F11"},
+   {"value": 16794880, "name": "F12"},
+   {"value": 16795136, "name": "SYSRQ"},
+   {"value": 16795392, "name": "SCROLLLOCK"},
+   {"value": 16795648, "name": "PAUSE"},
+   {"value": 16795904, "name": "INSERT"},
+   {"value": 16796160, "name": "HOME"},
+   {"value": 16796416, "name": "PAGEUP"},
+   {"value": 16796672, "name": "DELETE"},
+   {"value": 16796928, "name": "END"},
+   {"value": 16797184, "name": "PAGEDOWN"},
+   {"value": 16797440, "name": "RIGHT"},
+   {"value": 16797696, "name": "LEFT"},
+   {"value": 16797952, "name": "DOWN"},
+   {"value": 16798208, "name": "UP"},
+   {"value": 16798464, "name": "NUMLOCK"},
+   {"value": 16798720, "name": "KPSLASH"},
+   {"value": 16798976, "name": "KPASTERISK"},
+   {"value": 16799232, "name": "KPMINUS"},
+   {"value": 16799488, "name": "KPPLUS"},
+   {"value": 16799744, "name": "KPENTER"},
+   {"value": 16800000, "name": "KP1"},
+   {"value": 16800256, "name": "KP2"},
+   {"value": 16800512, "name": "KP3"},
+   {"value": 16800768, "name": "KP4"},
+   {"value": 16801024, "name": "KP5"},
+   {"value": 16801280, "name": "KP6"},
+   {"value": 16801536, "name": "KP7"},
+   {"value": 16801792, "name": "KP8"},
+   {"value": 16802048, "name": "KP9"},
+   {"value": 16802304, "name": "KP0"},
+   {"value": 16802560, "name": "KPDOT"},
+   {"value": 16802816, "name": "102ND"},
+   {"value": 16803072, "name": "COMPOSE"},
+   {"value": 16803328, "name": "POWER"},
+   {"value": 16803584, "name": "KPEQUAL"},
+   {"value": 16803840, "name": "F13"},
+   {"value": 16804096, "name": "F14"},
+   {"value": 16804352, "name": "F15"},
+   {"value": 16804608, "name": "F16"},
+   {"value": 16804864, "name": "F17"},
+   {"value": 16805120, "name": "F18"},
+   {"value": 16805376, "name": "F19"},
+   {"value": 16805632, "name": "F20"},
+   {"value": 16805888, "name": "F21"},
+   {"value": 16806144, "name": "F22"},
+   {"value": 16806400, "name": "F23"},
+   {"value": 16806656, "name": "F24"},
+   {"value": 16806912, "name": "OPEN"},
+   {"value": 16807168, "name": "HELP"},
+   {"value": 16807424, "name": "PROPS"},
+   {"value": 16807680, "name": "FRONT"},
+   {"value": 16807936, "name": "STOP"},
+   {"value": 16808192, "name": "AGAIN"},
+   {"value": 16808448, "name": "UNDO"},
+   {"value": 16808704, "name": "CUT"},
+   {"value": 16808960, "name": "COPY"},
+   {"value": 16809216, "name": "PASTE"},
+   {"value": 16809472, "name": "FIND"},
+   {"value": 16809728, "name": "MUTE"},
+   {"value": 16809984, "name": "VOLUMEUP"},
+   {"value": 16810240, "name": "VOLUMEDOWN"},
+   {"value": 16811264, "name": "KPCOMMA"},
+   {"value": 16811776, "name": "RO"},
+   {"value": 16812032, "name": "KATAKANAHIRAGANA"},
+   {"value": 16812288, "name": "YEN"},
+   {"value": 16812544, "name": "HENKAN"},
+   {"value": 16812800, "name": "MUHENKAN"},
+   {"value": 16813056, "name": "KPJPCOMMA"},
+   {"value": 16814080, "name": "HANGEUL"},
+   {"value": 16814336, "name": "HANJA"},
+   {"value": 16814592, "name": "KATAKANA"},
+   {"value": 16814848, "name": "HIRAGANA"},
+   {"value": 16815104, "name": "ZENKAKUHANKAKU"},
+   {"value": 16823808, "name": "KPLEFTPAREN"},
+   {"value": 16824064, "name": "KPRIGHTPAREN"},
+   {"value": 16834560, "name": "LEFTCTRL"},
+   {"value": 16834816, "name": "LEFTSHIFT"},
+   {"value": 16835072, "name": "LEFTALT"},
+   {"value": 16835328, "name": "LEFTWINDOWS"},
+   {"value": 16835584, "name": "RIGHTCTRL"},
+   {"value": 16835840, "name": "RIGHTSHIFT"},
+   {"value": 16836096, "name": "RIGHTALT"},
+   {"value": 16836352, "name": "RIGHTMETA"},
+   {"value": 16836608, "name": "MEDIA PLAYPAUSE"},
+   {"value": 16836864, "name": "MEDIA STOPCD"},
+   {"value": 16837120, "name": "MEDIA PREVIOUSSONG"},
+   {"value": 16837376, "name": "MEDIA NEXTSONG"},
+   {"value": 16837632, "name": "MEDIA EJECTCD"},
+   {"value": 16837888, "name": "MEDIA VOLUMEUP"},
+   {"value": 16838144, "name": "MEDIA VOLUMEDOWN"},
+   {"value": 16838400, "name": "MEDIA MUTE"},
+   {"value": 16838656, "name": "MEDIA WWW"},
+   {"value": 16838912, "name": "MEDIA BACK"},
+   {"value": 16839168, "name": "MEDIA FORWARD"},
+   {"value": 16839424, "name": "MEDIA STOP"},
+   {"value": 16839680, "name": "MEDIA FIND"},
+   {"value": 16839936, "name": "MEDIA SCROLLUP"},
+   {"value": 16840192, "name": "MEDIA SCROLLDOWN"},
+   {"value": 16840448, "name": "MEDIA EDIT"},
+   {"value": 16840704, "name": "MEDIA SLEEP"},
+   {"value": 16840960, "name": "MEDIA COFFEE"},
+   {"value": 16841216, "name": "MEDIA REFRESH"},
+   {"value": 16841472, "name": "MEDIA CALC"},
+   {"value": 16777222, "name": "Alt+Shift+No Output"},
+   {"value": 117452800, "name": "Power"},
+   {"value": 117453056, "name": "Reset"},
+   {"value": 117453312, "name": "Sleep"},
+   {"value": 117453568, "name": "Sleep After"},
+   {"value": 117453824, "name": "Sleep Mode"},
+   {"value": 117454080, "name": "Illumination"},
+   {"value": 117454336, "name": "Function Buttons"},
+   {"value": 117456896, "name": "Menu"},
+   {"value": 117457152, "name": "Menu/Pick"},
+   {"value": 117457408, "name": "Menu Up"},
+   {"value": 117457664, "name": "Menu Down"},
+   {"value": 117457920, "name": "Menu Left"},
+   {"value": 117458176, "name": "Menu Right"},
+   {"value": 117458432, "name": "Menu Escape"},
+   {"value": 117458688, "name": "Menu Value Increase"},
+   {"value": 117458944, "name": "Menu Value Decrease"},
+   {"value": 117465088, "name": "Data On Screen"},
+   {"value": 117465344, "name": "Closed Caption"},
+   {"value": 117465856, "name": "VCR/TV"},
+   {"value": 117466368, "name": "Snapshot"},
+   {"value": 117467392, "name": "Red"},
+   {"value": 117467648, "name": "Green"},
+   {"value": 117467904, "name": "Blue"},
+   {"value": 117468160, "name": "Yellow"},
+   {"value": 117468416, "name": "Aspect Ratio"},
+   {"value": 117468928, "name": "Brightness Up"},
+   {"value": 117469184, "name": "Brightness Down"},
+   {"value": 117469696, "name": "Brightness Toggle"},
+   {"value": 117469952, "name": "Brightness Min"},
+   {"value": 117470208, "name": "Brightness Max"},
+   {"value": 117470464, "name": "Brightness Auto"},
+   {"value": 117471488, "name": "Keyboard Illumination Up"},
+   {"value": 117471744, "name": "Keyboard Illumination Down"},
+   {"value": 117472256, "name": "Keyboard Illumination Toggle"},
+   {"value": 117473792, "name": "Mode Step"},
+   {"value": 117474048, "name": "Recall Last"},
+   {"value": 117474304, "name": "Enter Channel"},
+   {"value": 117475328, "name": "Media Select Computer"},
+   {"value": 117475584, "name": "Media Select TV"},
+   {"value": 117475840, "name": "Media Select WWW"},
+   {"value": 117476096, "name": "Media Select DVD"},
+   {"value": 117476352, "name": "Media Select Telephone"},
+   {"value": 117476608, "name": "Media Select Program Guide"},
+   {"value": 117476864, "name": "Media Select Video Phone"},
+   {"value": 117477120, "name": "Media Select Games"},
+   {"value": 117477376, "name": "Media Select Messages"},
+   {"value": 117477632, "name": "Media Select CD"},
+   {"value": 117477888, "name": "Media Select VCR"},
+   {"value": 117478144, "name": "Media Select Tuner"},
+   {"value": 117478400, "name": "Quit"},
+   {"value": 117478656, "name": "Help"},
+   {"value": 117478912, "name": "Media Select Tape"},
+   {"value": 117479168, "name": "Media Select Cable"},
+   {"value": 117479424, "name": "Media Select Satellite"},
+   {"value": 117479680, "name": "Media Select Security"},
+   {"value": 117479936, "name": "Media Select Home"},
+   {"value": 117480448, "name": "Channel Increment"},
+   {"value": 117480704, "name": "Channel Decrement"},
+   {"value": 117481472, "name": "VCR Plus"},
+   {"value": 117485568, "name": "Play"},
+   {"value": 117485824, "name": "Pause"},
+   {"value": 117486080, "name": "Record"},
+   {"value": 117486336, "name": "Fast Forward"},
+   {"value": 117486592, "name": "Rewind"},
+   {"value": 117486848, "name": "Scan Next Track"},
+   {"value": 117487104, "name": "Scan Previous Track"},
+   {"value": 117487360, "name": "Stop"},
+   {"value": 117487616, "name": "Eject"},
+   {"value": 117487872, "name": "Random Play"},
+   {"value": 117488128, "name": "Select DisC"},
+   {"value": 117488384, "name": "Enter Disc"},
+   {"value": 117488640, "name": "Repeat"},
+   {"value": 117488896, "name": "Tracking"},
+   {"value": 117489152, "name": "Track Normal"},
+   {"value": 117489408, "name": "Slow Tracking"},
+   {"value": 117492992, "name": "Play/Pause"},
+   {"value": 117497856, "name": "Volume"},
+   {"value": 117498368, "name": "Mute"},
+   {"value": 117499136, "name": "Bass Boost"},
+   {"value": 117500160, "name": "Volume Up"},
+   {"value": 117500416, "name": "Volume Down"},
+   {"value": 117503232, "name": "Slow"},
+   {"value": 117506048, "name": "Fan Enable"},
+   {"value": 117506304, "name": "Fan Speed"},
+   {"value": 117506560, "name": "Light"},
+   {"value": 117506816, "name": "Light Illumination Level"},
+   {"value": 117507072, "name": "Climate Control Enable"},
+   {"value": 117507328, "name": "Room Temperature"},
+   {"value": 117507584, "name": "Security Enable"},
+   {"value": 117507840, "name": "Fire Alarm"},
+   {"value": 117508096, "name": "Police Alarm"},
+   {"value": 117508352, "name": "Proximity"},
+   {"value": 117508608, "name": "Motion"},
+   {"value": 117508864, "name": "Duress Alarm"},
+   {"value": 117509120, "name": "Holdup Alarm"},
+   {"value": 117509376, "name": "Medical Alarm"},
+   {"value": 117526528, "name": "Balance Right"},
+   {"value": 117526784, "name": "Balance Left"},
+   {"value": 117527040, "name": "Bass Increment"},
+   {"value": 117527296, "name": "Bass Decrement"},
+   {"value": 117527552, "name": "Treble Increment"},
+   {"value": 117527808, "name": "Treble Decrement"},
+   {"value": 117530624, "name": "Speaker System"},
+   {"value": 117530880, "name": "Channel Left"},
+   {"value": 117531136, "name": "Channel Right"},
+   {"value": 117531392, "name": "Channel Center"},
+   {"value": 117531648, "name": "Channel Front"},
+   {"value": 117531904, "name": "Channel Center Front"},
+   {"value": 117532160, "name": "Channel Side"},
+   {"value": 117532416, "name": "Channel Surround"},
+   {"value": 117532672, "name": "Channel Low Frequency Enhancement"},
+   {"value": 117532928, "name": "Channel Top"},
+   {"value": 117533184, "name": "Channel Unknown"},
+   {"value": 117534720, "name": "Subchannel"},
+   {"value": 117534976, "name": "Subchannel Increment"},
+   {"value": 117535232, "name": "Subchannel Decrement"},
+   {"value": 117535488, "name": "Alternate Audio Increment"},
+   {"value": 117535744, "name": "Alternate Audio Decrement"},
+   {"value": 117538816, "name": "Application Launch Buttons"},
+   {"value": 117539072, "name": "AL Launch Button Configuration Tool"},
+   {"value": 117539328, "name": "AL Programmable Button Configuration"},
+   {"value": 117539584, "name": "AL Consumer Control Configuration"},
+   {"value": 117539840, "name": "AL Word Processor"},
+   {"value": 117540096, "name": "AL Text Editor"},
+   {"value": 117540352, "name": "AL Spreadsheet"},
+   {"value": 117540608, "name": "AL Graphics Editor"},
+   {"value": 117540864, "name": "AL Presentation App"},
+   {"value": 117541120, "name": "AL Database App"},
+   {"value": 117541376, "name": "AL Email Reader"},
+   {"value": 117541632, "name": "AL Newsreader"},
+   {"value": 117541888, "name": "AL Voicemail"},
+   {"value": 117542144, "name": "AL Contacts/Address Book"},
+   {"value": 117542400, "name": "AL Calendar/Schedule"},
+   {"value": 117542656, "name": "AL Task/Project Manager"},
+   {"value": 117542912, "name": "AL Log/Journal/Timecard"},
+   {"value": 117543168, "name": "AL Checkbook/Finance"},
+   {"value": 117543424, "name": "AL Calculator"},
+   {"value": 117543680, "name": "AL A/V Capture/Playback"},
+   {"value": 117543936, "name": "AL Local Machine Browser"},
+   {"value": 117544192, "name": "AL LAN/WAN Browser"},
+   {"value": 117544448, "name": "AL Internet Browser"},
+   {"value": 117544704, "name": "AL Remote Networking/ISP Connect"},
+   {"value": 117544960, "name": "AL Network Conference"},
+   {"value": 117545216, "name": "AL Network Chat"},
+   {"value": 117545472, "name": "AL Telephony/Dialer"},
+   {"value": 117545728, "name": "AL Logon"},
+   {"value": 117545984, "name": "AL Logoff"},
+   {"value": 117546240, "name": "AL Logon/Logoff"},
+   {"value": 117546496, "name": "AL Terminal Lock/Screensaver"},
+   {"value": 117546752, "name": "AL Control Panel"},
+   {"value": 117547008, "name": "AL Command Line Processor/Run"},
+   {"value": 117547264, "name": "AL Process/Task Manager"},
+   {"value": 117547520, "name": "AL Select Tast/Application"},
+   {"value": 117547776, "name": "AL Next Task/Application"},
+   {"value": 117548032, "name": "AL Previous Task/Application"},
+   {"value": 117548288, "name": "AL Preemptive Halt Task/Application"},
+   {"value": 117548544, "name": "AL Integrated Help Center"},
+   {"value": 117548800, "name": "AL Documents"},
+   {"value": 117549056, "name": "AL Thesaurus"},
+   {"value": 117549312, "name": "AL Dictionary"},
+   {"value": 117549568, "name": "AL Desktop"},
+   {"value": 117549824, "name": "AL Spell Check"},
+   {"value": 117550080, "name": "AL Grammar Check"},
+   {"value": 117550336, "name": "AL Wireless Status"},
+   {"value": 117550592, "name": "AL Keyboard Layout"},
+   {"value": 117550848, "name": "AL Virus Protection"},
+   {"value": 117551104, "name": "AL Encryption"},
+   {"value": 117551360, "name": "AL Screen Saver"},
+   {"value": 117551616, "name": "AL Alarms"},
+   {"value": 117551872, "name": "AL Clock"},
+   {"value": 117552128, "name": "AL File Browser"},
+   {"value": 117552384, "name": "AL Power Status"},
+   {"value": 117552640, "name": "AL Image Browser"},
+   {"value": 117552896, "name": "AL Audio Browser"},
+   {"value": 117553152, "name": "AL Movie Browser"},
+   {"value": 117553408, "name": "AL Digital Rights Manager"},
+   {"value": 117553664, "name": "AL Digital Wallet"},
+   {"value": 117554176, "name": "AL Instant Messaging"},
+   {"value": 117554432, "name": "AL OEM Features/ Tips/Tutorial Browser"},
+   {"value": 117554688, "name": "AL OEM Help"},
+   {"value": 117554944, "name": "AL Online Community"},
+   {"value": 117555200, "name": "AL Entertainment Content Browser"},
+   {"value": 117555456, "name": "AL Online Shopping Browser"},
+   {"value": 117555712, "name": "AL SmartCard Information/Help"},
+   {"value": 117555968, "name": "AL Market Monitor/Finance Browser"},
+   {"value": 117556224, "name": "AL Customized Corporate News Browser"},
+   {"value": 117556480, "name": "AL Online Activity Browser"},
+   {"value": 117556736, "name": "AL Research/Search Browser"},
+   {"value": 117556992, "name": "AL Audio Player"},
+   {"value": 117571584, "name": "Generic GUI Application Controls"},
+   {"value": 117571840, "name": "AC New"},
+   {"value": 117572096, "name": "AC Open"},
+   {"value": 117572352, "name": "AC Close"},
+   {"value": 117572608, "name": "AC Exit"},
+   {"value": 117572864, "name": "AC Maximize"},
+   {"value": 117573120, "name": "AC Minimize"},
+   {"value": 117573376, "name": "AC Save"},
+   {"value": 117573632, "name": "AC Print"},
+   {"value": 117573888, "name": "AC Properties"},
+   {"value": 117578240, "name": "AC Undo"},
+   {"value": 117578496, "name": "AC Copy"},
+   {"value": 117578752, "name": "AC Cut"},
+   {"value": 117579008, "name": "AC Paste"},
+   {"value": 117579264, "name": "AC Select All"},
+   {"value": 117579520, "name": "AC Find"},
+   {"value": 117579776, "name": "AC Find and Replace"},
+   {"value": 117580032, "name": "AC Search"},
+   {"value": 117580288, "name": "AC Go To"},
+   {"value": 117580544, "name": "AC Home"},
+   {"value": 117580800, "name": "AC Back"},
+   {"value": 117581056, "name": "AC Forward"},
+   {"value": 117581312, "name": "AC Stop"},
+   {"value": 117581568, "name": "AC Refresh"},
+   {"value": 117581824, "name": "AC Previous Link"},
+   {"value": 117582080, "name": "AC Next Link"},
+   {"value": 117582336, "name": "AC Bookmarks"},
+   {"value": 117582592, "name": "AC History"},
+   {"value": 117582848, "name": "AC Subscriptions"},
+   {"value": 117583104, "name": "AC Zoom In"},
+   {"value": 117583360, "name": "AC Zoom Out"},
+   {"value": 117583616, "name": "AC Zoom"},
+   {"value": 117583872, "name": "AC Full Screen View"},
+   {"value": 117584128, "name": "AC Normal View"},
+   {"value": 117584384, "name": "AC View Toggle"},
+   {"value": 117584640, "name": "AC Scroll Up"},
+   {"value": 117584896, "name": "AC Scroll Down"},
+   {"value": 117585152, "name": "AC Scroll"},
+   {"value": 117585408, "name": "AC Pan Left"},
+   {"value": 117585664, "name": "AC Pan Right"},
+   {"value": 117585920, "name": "AC Pan"},
+   {"value": 117586176, "name": "AC New Window"},
+   {"value": 117586432, "name": "AC Tile Horizontally"},
+   {"value": 117586688, "name": "AC Tile Vertically"},
+   {"value": 117586944, "name": "AC Format"},
+   {"value": 117587200, "name": "AC Edit"},
+   {"value": 117587456, "name": "AC Bold"},
+   {"value": 117587712, "name": "AC Italics"},
+   {"value": 117587968, "name": "AC Underline"},
+   {"value": 117588224, "name": "AC Strikethrough"},
+   {"value": 117588480, "name": "AC Subscript"},
+   {"value": 117588736, "name": "AC Superscript"},
+   {"value": 117588992, "name": "AC All Caps"},
+   {"value": 117589248, "name": "AC Rotate"},
+   {"value": 117589504, "name": "AC Resize"},
+   {"value": 117589760, "name": "AC Flip horizontal"},
+   {"value": 117590016, "name": "AC Flip Vertical"},
+   {"value": 117590272, "name": "AC Mirror Horizontal"},
+   {"value": 117590528, "name": "AC Mirror Vertical"},
+   {"value": 117590784, "name": "AC Font Select"},
+   {"value": 117591040, "name": "AC Font Color"},
+   {"value": 117591296, "name": "AC Font Size"},
+   {"value": 117591552, "name": "AC Justify Left"},
+   {"value": 117591808, "name": "AC Justify Center H"},
+   {"value": 117592064, "name": "AC Justify Right"},
+   {"value": 117592320, "name": "AC Justify Block H"},
+   {"value": 117592576, "name": "AC Justify Top"},
+   {"value": 117592832, "name": "AC Justify Center V"},
+   {"value": 117593088, "name": "AC Justify Bottom"},
+   {"value": 117593344, "name": "AC Justify Block V"},
+   {"value": 117593600, "name": "AC Indent Decrease"},
+   {"value": 117593856, "name": "AC Indent Increase"},
+   {"value": 117594112, "name": "AC Numbered List"},
+   {"value": 117594368, "name": "AC Restart Numbering"},
+   {"value": 117594624, "name": "AC Bulleted List"},
+   {"value": 117594880, "name": "AC Promote"},
+   {"value": 117595136, "name": "AC Demote"},
+   {"value": 117595392, "name": "AC Yes"},
+   {"value": 117595648, "name": "AC No"},
+   {"value": 117595904, "name": "AC Cancel"},
+   {"value": 117596160, "name": "AC Catalog"},
+   {"value": 117596416, "name": "AC Buy/Checkout"},
+   {"value": 117596672, "name": "AC Add to Cart"},
+   {"value": 117596928, "name": "AC Expand"},
+   {"value": 117597184, "name": "AC Expand All"},
+   {"value": 117597440, "name": "AC Collapse"},
+   {"value": 117597696, "name": "AC Collapse All"},
+   {"value": 117597952, "name": "AC Print Preview"},
+   {"value": 117598208, "name": "AC Paste Special"},
+   {"value": 117598464, "name": "AC Insert Mode"},
+   {"value": 117598720, "name": "AC Delete"},
+   {"value": 117598976, "name": "AC Lock"},
+   {"value": 117599232, "name": "AC Unlock"},
+   {"value": 117599488, "name": "AC Protect"},
+   {"value": 117599744, "name": "AC Unprotect"},
+   {"value": 117600000, "name": "AC Attach Comment"},
+   {"value": 117600256, "name": "AC Delete Comment"},
+   {"value": 117600512, "name": "AC View Comment"},
+   {"value": 117600768, "name": "AC Select Word"},
+   {"value": 117601024, "name": "AC Select Sentence"},
+   {"value": 117601280, "name": "AC Select Paragraph"},
+   {"value": 117601536, "name": "AC Select Column"},
+   {"value": 117601792, "name": "AC Select Row"},
+   {"value": 117602048, "name": "AC Select Table"},
+   {"value": 117602304, "name": "AC Select Object"},
+   {"value": 117602560, "name": "AC Redo/Repeat"},
+   {"value": 117602816, "name": "AC Sort"},
+   {"value": 117603072, "name": "AC Sort Ascending"},
+   {"value": 117603328, "name": "AC Sort Descending"},
+   {"value": 117603584, "name": "AC Filter"},
+   {"value": 117603840, "name": "AC Set Clock"},
+   {"value": 117604096, "name": "AC View Clock"},
+   {"value": 117604352, "name": "AC Select Time Zone"},
+   {"value": 117604608, "name": "AC Edit Time Zones"},
+   {"value": 117604864, "name": "AC Set Alarm"},
+   {"value": 117605120, "name": "AC Clear Alarm"},
+   {"value": 117605376, "name": "AC Snooze Alarm"},
+   {"value": 117605632, "name": "AC Reset Alarm"},
+   {"value": 117605888, "name": "AC Synchronize"},
+   {"value": 117606144, "name": "AC Send/Receive"},
+   {"value": 117606400, "name": "AC Send To"},
+   {"value": 117606656, "name": "AC Reply"},
+   {"value": 117606912, "name": "AC Reply All"},
+   {"value": 117607168, "name": "AC Forward Msg"},
+   {"value": 117607424, "name": "AC Send"},
+   {"value": 117607680, "name": "AC Attach File"},
+   {"value": 117607936, "name": "AC Upload"},
+   {"value": 117608192, "name": "AC Download Save Target As"},
+   {"value": 117608448, "name": "AC Set Borders"},
+   {"value": 117608704, "name": "AC Insert Row"},
+   {"value": 117608960, "name": "AC Insert Column"},
+   {"value": 117609216, "name": "AC Insert File"},
+   {"value": 117609472, "name": "AC Insert Picture"},
+   {"value": 117609728, "name": "AC Insert Object"},
+   {"value": 117609984, "name": "AC Insert Symbol"},
+   {"value": 117610240, "name": "AC Save and Close"},
+   {"value": 117610496, "name": "AC Rename"},
+   {"value": 117610752, "name": "AC Merge"},
+   {"value": 117611008, "name": "AC Split"},
+   {"value": 117611264, "name": "AC Distribute Horizontally"},
+   {"value": 117611520, "name": "AC Distribute Vertically"}
+  ]
+ },
+ "devices": [
+  {
+   "device": {
+    "id": "B04200000000-BD2BC136",
+    "name": "MX Master 4",
+    "codename": "MX Master 4",
+    "kind": "mouse",
+    "online": true,
+    "protocol": 4.5,
+    "model_id": "B04200000000",
+    "unit_id": "BD2BC136",
+    "serial": "",
+    "battery": {"level": 45, "status": "DISCHARGING"}
+   },
+   "settings": [
+    {"name": "hires-smooth-invert", "label": "Scroll Wheel Direction", "description": "Invert direction for vertical scroll with wheel.", "kind": "TOGGLE", "display": true, "writable": true, "value": false},
+    {"name": "hires-smooth-resolution", "label": "Scroll Wheel Resolution", "description": "High-sensitivity mode for vertical scroll with the wheel.\nSet to ignore if scrolling is abnormally fast or slow", "kind": "TOGGLE", "display": true, "writable": true, "value": true},
+    {"name": "hires-scroll-mode", "label": "Scroll Wheel Diversion", "description": "Make scroll wheel send HIRES_WHEEL HID++ notifications (which trigger Solaar rules but are otherwise ignored).", "kind": "TOGGLE", "display": true, "writable": true, "value": false},
+    {"name": "scroll-ratchet-torque", "label": "Scroll Wheel Ratchet Torque", "description": "Change the torque needed to overcome the ratchet.", "kind": "RANGE", "display": true, "writable": true, "min": 1, "max": 100, "value": 75},
+    {
+     "name": "scroll-ratchet",
+     "label": "Scroll Wheel Ratcheted",
+     "description": "Switch the mouse wheel between speed-controlled ratcheting and always freespin.",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": [
+      {"value": 1, "name": "Freespinning"},
+      {"value": 2, "name": "Ratcheted"}
+     ],
+     "value": 2
+    },
+    {"name": "smart-shift", "label": "Scroll Wheel Ratchet Speed", "description": "Use the mouse wheel speed to switch between ratcheted and freespinning.\nThe mouse wheel is always ratcheted at 50.", "kind": "RANGE", "display": true, "writable": true, "min": 1, "max": 50, "value": 12},
+    {"name": "thumb-scroll-invert", "label": "Thumb Wheel Direction", "description": "Invert thumb wheel scroll direction.", "kind": "TOGGLE", "display": true, "writable": true, "value": false},
+    {"name": "thumb-scroll-mode", "label": "Thumb Wheel Diversion", "description": "Make thumb wheel send THUMB_WHEEL HID++ notifications (which trigger Solaar rules but are otherwise ignored).", "kind": "TOGGLE", "display": true, "writable": true, "value": false},
+    {
+     "name": "dpi",
+     "label": "Sensitivity (DPI)",
+     "description": "Mouse movement sensitivity\nMay need Onboard Profiles set to Disable to be effective.",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": {
+      "numeric": [200, 8000, 50]
+     },
+     "value": 1000
+    },
+    {
+     "name": "reprogrammable-keys",
+     "label": "Key/Button Actions",
+     "description": "Change the action for the key or button.  Overridden by diversion.\nChanging important actions (such as for the left mouse button) can result in an unusable system.",
+     "kind": "MAP_CHOICE",
+     "display": true,
+     "writable": true,
+     "keys": [
+      {
+       "value": 82,
+       "name": "Middle Button",
+       "choices": [
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 195, "name": "Gesture Button"},
+        {"value": 196, "name": "Smart Shift"},
+        {"value": 416, "name": "unknown:0109"}
+       ]
+      },
+      {
+       "value": 83,
+       "name": "Back Button",
+       "choices": [
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 195, "name": "Gesture Button"},
+        {"value": 196, "name": "Smart Shift"},
+        {"value": 416, "name": "unknown:0109"}
+       ]
+      },
+      {
+       "value": 86,
+       "name": "Forward Button",
+       "choices": [
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 195, "name": "Gesture Button"},
+        {"value": 196, "name": "Smart Shift"},
+        {"value": 416, "name": "unknown:0109"}
+       ]
+      },
+      {
+       "value": 195,
+       "name": "Mouse Gesture Button",
+       "choices": [
+        {"value": 195, "name": "Gesture Button"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 196, "name": "Smart Shift"},
+        {"value": 416, "name": "unknown:0109"}
+       ]
+      },
+      {
+       "value": 196,
+       "name": "Smart Shift",
+       "choices": [
+        {"value": 196, "name": "Smart Shift"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 195, "name": "Gesture Button"},
+        {"value": 416, "name": "unknown:0109"}
+       ]
+      },
+      {
+       "value": 416,
+       "name": "Haptic",
+       "choices": [
+        {"value": 416, "name": "unknown:0109"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 195, "name": "Gesture Button"},
+        {"value": 196, "name": "Smart Shift"}
+       ]
+      }
+     ],
+     "value": {"82": 82, "83": 83, "86": 86, "195": 195, "196": 196, "416": 416}
+    },
+    {
+     "name": "divert-keys",
+     "label": "Key/Button Diversion",
+     "description": "Make the key or button send HID++ notifications (Diverted) or initiate Mouse Gestures or Sliding DPI",
+     "kind": "MAP_CHOICE",
+     "display": true,
+     "writable": true,
+     "keys": [
+      {
+       "value": 82,
+       "name": "Middle Button",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 83,
+       "name": "Back Button",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 86,
+       "name": "Forward Button",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 195,
+       "name": "Mouse Gesture Button",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 196,
+       "name": "Smart Shift",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 416,
+       "name": "Haptic",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      }
+     ],
+     "value": {"82": 0, "83": 0, "86": 0, "195": 2, "196": 0, "416": 1}
+    },
+    {"name": "force-sensing", "label": "Force Sensing Button", "description": "Change the force required to activate button.", "kind": "RANGE", "display": true, "writable": true, "min": 4134, "max": 6872, "value": 5167},
+    {
+     "name": "change-host",
+     "label": "Change Host",
+     "description": "Switch connection to a different host",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": [
+      {"value": 0, "name": "1:hermes"},
+      {"value": 1, "name": "2:HERMES"},
+      {"value": 2, "name": "3:hermes"}
+     ],
+     "value": 2
+    },
+    {"name": "haptic-level", "label": "Haptic Feedback Level", "description": "Change power of haptic feedback.  (Zero to turn off.)", "kind": "RANGE", "display": true, "writable": true, "min": 0, "max": 100, "value": 100},
+    {
+     "name": "haptic-play",
+     "label": "Play Haptic Waveform",
+     "description": "Tell device to play a haptic waveform.",
+     "kind": "CHOICE",
+     "display": false,
+     "writable": true,
+     "choices": [
+      {"value": 0, "name": "SHARP STATE CHANGE"},
+      {"value": 1, "name": "DAMP STATE CHANGE"},
+      {"value": 2, "name": "SHARP COLLISION"},
+      {"value": 3, "name": "DAMP COLLISION"},
+      {"value": 4, "name": "SUBTLE COLLISION"},
+      {"value": 5, "name": "HAPPY ALERT"},
+      {"value": 6, "name": "ANGRY ALERT"},
+      {"value": 7, "name": "COMPLETED"},
+      {"value": 8, "name": "SQUARE"},
+      {"value": 9, "name": "WAVE"},
+      {"value": 10, "name": "FIREWORK"},
+      {"value": 11, "name": "MAD"},
+      {"value": 12, "name": "KNOCK"},
+      {"value": 13, "name": "JINGLE"},
+      {"value": 14, "name": "RINGING"},
+      {"value": 27, "name": "WHISPER COLLISION"}
+     ],
+     "value": null
+    }
+   ]
+  },
+  {
+   "device": {
+    "id": "B34D40620000-FF883310",
+    "name": "K850 Performance Wireless Keyboard",
+    "codename": "Keyboard K850",
+    "kind": "keyboard",
+    "online": true,
+    "protocol": 4.5,
+    "model_id": "B34D40620000",
+    "unit_id": "FF883310",
+    "serial": "",
+    "battery": {"level": 90, "status": "DISCHARGING"}
+   },
+   "settings": [
+    {"name": "fn-swap", "label": "Swap Fx function", "description": "When set, the F1..F12 keys will activate their special function,\nand you must hold the FN key to activate their standard function.\n\nWhen unset, the F1..F12 keys will activate their standard function,\nand you must hold the FN key to activate their special function.", "kind": "TOGGLE", "display": true, "writable": true, "value": false},
+    {
+     "name": "persistent-remappable-keys",
+     "label": "Persistent Key/Button Mapping",
+     "description": "Permanently change the mapping for the key or button.\nChanging important keys or buttons (such as for the left mouse button) can result in an unusable system.",
+     "kind": "MAP_CHOICE",
+     "display": true,
+     "writable": true,
+     "keys": [
+      {"value": 213, "name": "MultiPlatform Home/Mission Control", "choices": "@k850-remap"},
+      {"value": 214, "name": "MultiPlatform Menu/Show/Hide Virtual Keyboard/Launchpad", "choices": "@k850-remap"},
+      {"value": 189, "name": "Multiplatform Back", "choices": "@k850-remap"},
+      {"value": 212, "name": "MultiPlatform Search", "choices": "@k850-remap"},
+      {"value": 6, "name": "Previous", "choices": "@k850-remap"},
+      {"value": 4, "name": "Play/Pause old", "choices": "@k850-remap"},
+      {"value": 5, "name": "Next", "choices": "@k850-remap"},
+      {"value": 3, "name": "Mute", "choices": "@k850-remap"},
+      {"value": 2, "name": "Volume Down old", "choices": "@k850-remap"},
+      {"value": 1, "name": "Volume Up old", "choices": "@k850-remap"},
+      {"value": 194, "name": "Multiplatform Lock", "choices": "@k850-remap"},
+      {"value": 221, "name": "Multi Platform Language Switch", "choices": "@k850-remap"},
+      {"value": 191, "name": "Screen Capture/Print Screen", "choices": "@k850-remap"},
+      {"value": 10, "name": "Calculator", "choices": "@k850-remap"}
+     ],
+     "value": {"213": 117580544, "214": 16803072, "189": 117580800, "212": 117580032, "6": 117487104, "4": 117492992, "5": 117486848, "3": 117498368, "2": 117500416, "1": 117500160, "194": 2147483647, "221": 16777222, "191": 16795136, "10": 117543424}
+    },
+    {
+     "name": "divert-keys",
+     "label": "Key/Button Diversion",
+     "description": "Make the key or button send HID++ notifications (Diverted) or initiate Mouse Gestures or Sliding DPI",
+     "kind": "MAP_CHOICE",
+     "display": true,
+     "writable": true,
+     "keys": [
+      {
+       "value": 209,
+       "name": "Host Switch Channel 1",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 210,
+       "name": "Host Switch Channel 2",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 211,
+       "name": "Host Switch Channel 3",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 213,
+       "name": "MultiPlatform Home/Mission Control",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 214,
+       "name": "MultiPlatform Menu/Show/Hide Virtual Keyboard/Launchpad",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 189,
+       "name": "Multiplatform Back",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 212,
+       "name": "MultiPlatform Search",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 6,
+       "name": "Previous",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 4,
+       "name": "Play/Pause old",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 5,
+       "name": "Next",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 3,
+       "name": "Mute",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 2,
+       "name": "Volume Down old",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 1,
+       "name": "Volume Up old",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 194,
+       "name": "Multiplatform Lock",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 221,
+       "name": "Multi Platform Language Switch",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 191,
+       "name": "Screen Capture/Print Screen",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 10,
+       "name": "Calculator",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 193,
+       "name": "Fn Up",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      },
+      {
+       "value": 192,
+       "name": "Fn Down",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"}
+       ]
+      }
+     ],
+     "value": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "10": 0, "189": 0, "191": 0, "192": 0, "193": 0, "194": 0, "209": 0, "210": 0, "211": 0, "212": 0, "213": 0, "214": 0, "221": 0}
+    },
+    {
+     "name": "disable-keyboard-keys",
+     "label": "Disable keys",
+     "description": "Disable specific keyboard keys.",
+     "kind": "MULTIPLE_TOGGLE",
+     "display": true,
+     "writable": false,
+     "value": {"1": false, "2": false, "4": false, "8": false, "16": false}
+    },
+    {
+     "name": "multiplatform",
+     "label": "Set OS",
+     "description": "Change keys to match OS.",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": [
+      {"value": 0, "name": "Windows"},
+      {"value": 1, "name": "MacOS"},
+      {"value": 2, "name": "iOS"}
+     ],
+     "value": 0
+    },
+    {
+     "name": "change-host",
+     "label": "Change Host",
+     "description": "Switch connection to a different host",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": [
+      {"value": 0, "name": "1:hermes"},
+      {"value": 1, "name": "2:hermes"},
+      {"value": 2, "name": "3:HERMES"}
+     ],
+     "value": 0
+    }
+   ]
+  },
+  {
+   "device": {
+    "id": "B03700000000-3F51C045",
+    "name": "MX Anywhere 3S",
+    "codename": "MX Anywhere 3S",
+    "kind": "mouse",
+    "online": true,
+    "protocol": 4.5,
+    "model_id": "B03700000000",
+    "unit_id": "3F51C045",
+    "serial": "",
+    "battery": {"level": 75, "status": "DISCHARGING"}
+   },
+   "settings": [
+    {"name": "hires-smooth-invert", "label": "Scroll Wheel Direction", "description": "Invert direction for vertical scroll with wheel.", "kind": "TOGGLE", "display": true, "writable": true, "value": false},
+    {"name": "hires-smooth-resolution", "label": "Scroll Wheel Resolution", "description": "High-sensitivity mode for vertical scroll with the wheel.\nSet to ignore if scrolling is abnormally fast or slow", "kind": "TOGGLE", "display": true, "writable": true, "value": true},
+    {"name": "hires-scroll-mode", "label": "Scroll Wheel Diversion", "description": "Make scroll wheel send HIRES_WHEEL HID++ notifications (which trigger Solaar rules but are otherwise ignored).", "kind": "TOGGLE", "display": true, "writable": true, "value": false},
+    {"name": "scroll-ratchet-torque", "label": "Scroll Wheel Ratchet Torque", "description": "Change the torque needed to overcome the ratchet.", "kind": "RANGE", "display": true, "writable": true, "min": 1, "max": 100, "value": 50},
+    {
+     "name": "scroll-ratchet",
+     "label": "Scroll Wheel Ratcheted",
+     "description": "Switch the mouse wheel between speed-controlled ratcheting and always freespin.",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": [
+      {"value": 1, "name": "Freespinning"},
+      {"value": 2, "name": "Ratcheted"}
+     ],
+     "value": 2
+    },
+    {"name": "smart-shift", "label": "Scroll Wheel Ratchet Speed", "description": "Use the mouse wheel speed to switch between ratcheted and freespinning.\nThe mouse wheel is always ratcheted at 50.", "kind": "RANGE", "display": true, "writable": true, "min": 1, "max": 50, "value": 12},
+    {
+     "name": "dpi",
+     "label": "Sensitivity (DPI)",
+     "description": "Mouse movement sensitivity\nMay need Onboard Profiles set to Disable to be effective.",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": {
+      "numeric": [200, 8000, 50]
+     },
+     "value": 1000
+    },
+    {
+     "name": "reprogrammable-keys",
+     "label": "Key/Button Actions",
+     "description": "Change the action for the key or button.  Overridden by diversion.\nChanging important actions (such as for the left mouse button) can result in an unusable system.",
+     "kind": "MAP_CHOICE",
+     "display": true,
+     "writable": true,
+     "keys": [
+      {
+       "value": 80,
+       "name": "Left Button",
+       "choices": [
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"}
+       ]
+      },
+      {
+       "value": 81,
+       "name": "Right Button",
+       "choices": [
+        {"value": 81, "name": "Right Click"},
+        {"value": 80, "name": "Left Click"}
+       ]
+      },
+      {
+       "value": 82,
+       "name": "Middle Button",
+       "choices": [
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 196, "name": "Smart Shift"}
+       ]
+      },
+      {
+       "value": 83,
+       "name": "Back Button",
+       "choices": [
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 196, "name": "Smart Shift"}
+       ]
+      },
+      {
+       "value": 86,
+       "name": "Forward Button",
+       "choices": [
+        {"value": 86, "name": "Mouse Forward Button"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 196, "name": "Smart Shift"}
+       ]
+      },
+      {
+       "value": 196,
+       "name": "Smart Shift",
+       "choices": [
+        {"value": 196, "name": "Smart Shift"},
+        {"value": 80, "name": "Left Click"},
+        {"value": 81, "name": "Right Click"},
+        {"value": 82, "name": "Mouse Middle Button"},
+        {"value": 83, "name": "Mouse Back Button"},
+        {"value": 86, "name": "Mouse Forward Button"}
+       ]
+      }
+     ],
+     "value": {"80": 80, "81": 81, "82": 82, "83": 83, "86": 86, "196": 196}
+    },
+    {
+     "name": "divert-keys",
+     "label": "Key/Button Diversion",
+     "description": "Make the key or button send HID++ notifications (Diverted) or initiate Mouse Gestures or Sliding DPI",
+     "kind": "MAP_CHOICE",
+     "display": true,
+     "writable": true,
+     "keys": [
+      {
+       "value": 82,
+       "name": "Middle Button",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 83,
+       "name": "Back Button",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 86,
+       "name": "Forward Button",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      },
+      {
+       "value": 196,
+       "name": "Smart Shift",
+       "choices": [
+        {"value": 0, "name": "Regular"},
+        {"value": 1, "name": "Diverted"},
+        {"value": 2, "name": "Mouse Gestures"},
+        {"value": 3, "name": "Sliding DPI"}
+       ]
+      }
+     ],
+     "value": {"82": 0, "83": 0, "86": 0, "196": 0}
+    },
+    {
+     "name": "change-host",
+     "label": "Change Host",
+     "description": "Switch connection to a different host",
+     "kind": "CHOICE",
+     "display": true,
+     "writable": true,
+     "choices": [
+      {"value": 0, "name": "1:hermes"},
+      {"value": 1, "name": "2:[LG] webOS TV OLED55C3"},
+      {"value": 2, "name": "3:HERMES"}
+     ],
+     "value": 0
+    }
+   ]
+  }
+ ],
+ "kde_actions": [
+  {
+   "component": "mediacontrol",
+   "label": "Contrôleur de média",
+   "actions": [
+    {"name": "stopmedia", "label": "Arrêtez la lecture du média"},
+    {"name": "mediavolumeup", "label": "Augmentation du volume pour le média"},
+    {"name": "seekforwardmedialong", "label": "Avancement de 30 secondes de la lecture du média"},
+    {"name": "seekforwardmedia", "label": "Avancement de 5 secondes de la lecture du média"},
+    {"name": "mediavolumedown", "label": "Diminution du volume pour le média"},
+    {"name": "playmedia", "label": "Démarrer la lecture du média"},
+    {"name": "playpausemedia", "label": "Démarrer / Mettre en pause la lecture du média"},
+    {"name": "previousmedia", "label": "Lecture du média précédent"},
+    {"name": "nextmedia", "label": "Lecture du média suivant"},
+    {"name": "pausemedia", "label": "Mettre en pause la lecture du média"},
+    {"name": "seekbackwardmedialong", "label": "Retour arrière de 30 secondes de la lecture du média"},
+    {"name": "seekbackwardmedia", "label": "Retour arrière de 5 secondes de la lecture du média"}
+   ]
+  },
+  {
+   "component": "org_kde_powerdevil",
+   "label": "Gestion de l'énergie",
+   "actions": [
+    {"name": "Increase Screen Brightness", "label": "Augmenter la luminosité de l'écran"},
+    {"name": "Increase Screen Brightness Small", "label": "Augmenter la luminosité de l'écran de 1 %"},
+    {"name": "Increase Keyboard Brightness", "label": "Augmenter la luminosité du clavier"},
+    {"name": "powerProfile", "label": "Changer de profil de gestion d'énergie"},
+    {"name": "Toggle Keyboard Backlight", "label": "Changer le rétro-éclairage du clavier"},
+    {"name": "Decrease Screen Brightness", "label": "Diminuer la luminosité de l'écran"},
+    {"name": "Decrease Screen Brightness Small", "label": "Diminuer la luminosité de l'écran de 1 %"},
+    {"name": "Decrease Keyboard Brightness", "label": "Diminuer la luminosité du clavier"},
+    {"name": "PowerDown", "label": "Forcer l'extinction"},
+    {"name": "Hibernate", "label": "Hiberner"},
+    {"name": "Sleep", "label": "Suspendre"},
+    {"name": "PowerOff", "label": "Éteindre"},
+    {"name": "Turn Off Screen", "label": "Éteindre l'écran"}
+   ]
+  },
+  {
+   "component": "ksmserver",
+   "label": "Gestion de sessions",
+   "actions": [
+    {"name": "Log Out", "label": "Afficher l'écran de déconnexion"},
+    {"name": "Reboot", "label": "Redémarrer"},
+    {"name": "Lock Session", "label": "Verrouiller la session"},
+    {"name": "Shut Down", "label": "Éteindre"}
+   ]
+  },
+  {
+   "component": "org_kde_krunner_desktop",
+   "label": "KRunner",
+   "actions": [
+    {"name": "RunClipboard", "label": "Exécuter la commande en utilisant le contenu du presse-papier"},
+    {"name": "_launch", "label": "KRunner"}
+   ]
+  },
+  {
+   "component": "kwin",
+   "label": "KWin",
+   "actions": [
+    {"name": "Window Fullscreen", "label": "Afficher la fenêtre en plein écran"},
+    {"name": "view_zoom_in", "label": "Agrandir"},
+    {"name": "Expose", "label": "Basculer la présentation des fenêtres (Bureau actuel)"},
+    {"name": "ExposeClass", "label": "Basculer la présentation des fenêtres (Classe de fenêtres)"},
+    {"name": "ExposeAll", "label": "Basculer la présentation des fenêtres (Tous les bureaux)"},
+    {"name": "Grid View", "label": "Basculer vers l'affichage en grille"},
+    {"name": "Overview", "label": "Basculer vers l'aperçu"},
+    {"name": "Edit Tiles", "label": "Basculer vers l'éditeur de tuiles"},
+    {"name": "Window Above Other Windows", "label": "Conserver la fenêtre au-dessus des autres"},
+    {"name": "Window On All Desktops", "label": "Conserver la fenêtre sur tous les bureaux"},
+    {"name": "Show Desktop", "label": "Coup d'œil sur le bureau"},
+    {"name": "Window to Next Screen", "label": "Déplacer la fenêtre vers l'écran suivant"},
+    {"name": "Kill Window", "label": "Détruire une fenêtre"},
+    {"name": "Window One Desktop to the Right", "label": "Envoyer la fenêtre sur le bureau à droite"},
+    {"name": "Window One Desktop to the Left", "label": "Envoyer la fenêtre sur le bureau à gauche"},
+    {"name": "Cycle Overview", "label": "Faire défiler les vues en aperçu et en grille"},
+    {"name": "Window Close", "label": "Fermer la fenêtre"},
+    {"name": "Window Maximize", "label": "Maximiser la fenêtre"},
+    {"name": "Window Operations Menu", "label": "Menu « Fenêtre »"},
+    {"name": "Window Quick Tile Right", "label": "Mettre rapidement en mosaïque une fenêtre à droite"},
+    {"name": "Window Quick Tile Left", "label": "Mettre rapidement en mosaïque une fenêtre à gauche"},
+    {"name": "Walk Through Windows", "label": "Naviguer parmi les fenêtres"},
+    {"name": "Walk Through Windows of Current Application", "label": "Naviguer parmi les fenêtres de l'application courante"},
+    {"name": "Switch One Desktop to the Right", "label": "Passer au bureau de droite"},
+    {"name": "Switch One Desktop to the Left", "label": "Passer au bureau de gauche"},
+    {"name": "Switch One Desktop Down", "label": "Passer au bureau du dessous"},
+    {"name": "Switch One Desktop Up", "label": "Passer au bureau du dessus"},
+    {"name": "Switch to Previous Desktop", "label": "Passer au bureau précédent"},
+    {"name": "Switch to Next Desktop", "label": "Passer au bureau suivant"},
+    {"name": "Window Minimize", "label": "Réduire la fenêtre"},
+    {"name": "Toggle Night Color", "label": "Suspendre /Poursuivre l'utilisation de la couleur de nuit"},
+    {"name": "view_zoom_out", "label": "Zoomer en arrière"},
+    {"name": "view_actual_size", "label": "Zoomer jusqu'à la taille réelle"}
+   ]
+  },
+  {
+   "component": "plasmashell",
+   "label": "plasmashell",
+   "actions": [
+    {"name": "activate application launcher", "label": "Activer le lanceur d'applications"},
+    {"name": "manage activities", "label": "Afficher le sélecteur d'activités"},
+    {"name": "show-on-mouse-pos", "label": "Afficher les éléments du presse-papier à la position de la souris"},
+    {"name": "toggle do not disturb", "label": "Basculer « Ne pas déranger »"},
+    {"name": "cycle-panels", "label": "Déplacer le focus de clavier entre les panneaux"},
+    {"name": "clear-history", "label": "Effacer l'historique du presse-papier"},
+    {"name": "next activity", "label": "Parcourir les activités"}
+   ]
+  },
+  {
+   "component": "org_kde_spectacle_desktop",
+   "label": "Spectacle",
+   "actions": [
+    {"name": "ActiveWindowScreenShot", "label": "Capturer la fenêtre active"},
+    {"name": "WindowUnderCursorScreenShot", "label": "Capturer la fenêtre sous le curseur"},
+    {"name": "FullScreenScreenShot", "label": "Capturer le bureau entier"},
+    {"name": "CurrentMonitorScreenShot", "label": "Capturer le moniteur courant"},
+    {"name": "RectangularRegionScreenShot", "label": "Capturer une région rectangulaire"},
+    {"name": "RecordWindow", "label": "Démarrer / Arrêter l'enregistrement d'une fenêtre"},
+    {"name": "RecordRegion", "label": "Démarrer / Arrêter l'enregistrement d'une zone"},
+    {"name": "RecordScreen", "label": "Démarrer / Arrêter l'enregistrement de l'écran"},
+    {"name": "OpenWithoutScreenshot", "label": "Lancer sans réalisation de capture d'écran"},
+    {"name": "_launch", "label": "Spectacle"}
+   ]
+  },
+  {
+   "component": "org_kde_plasma_emojier_desktop",
+   "label": "Sélecteur d'émoticônes",
+   "actions": [
+    {"name": "_launch", "label": "Sélecteur d'émoticônes"}
+   ]
+  },
+  {
+   "component": "kmix",
+   "label": "Volume audio",
+   "actions": [
+    {"name": "push_to_talk", "label": "Appuyer pour parler"},
+    {"name": "increase_volume", "label": "Augmenter le volume"},
+    {"name": "increase_volume_small", "label": "Augmenter le volume de 1 %"},
+    {"name": "increase_microphone_volume", "label": "Augmenter le volume du microphone"},
+    {"name": "mic_mute", "label": "Couper le son du microphone"},
+    {"name": "decrease_volume", "label": "Diminuer le volume"},
+    {"name": "decrease_volume_small", "label": "Diminuer le volume de 1 %"},
+    {"name": "decrease_microphone_volume", "label": "Diminuer le volume du microphone"},
+    {"name": "mute", "label": "Muet"}
+   ]
+  }
+ ]
+}
