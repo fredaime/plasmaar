@@ -1,0 +1,29 @@
+plasmaar
+========
+
+plasmaar ports Solaar (https://github.com/pwr-Solaar/Solaar) to KDE Plasma. In the sense of the
+GNU General Public License it is a modified version of Solaar.
+
+Origin
+  Solaar's master branch at commit e7304c4c (2026-08-17, "Align the colons in the solaar show
+  device summary"), i.e. Solaar 1.1.20 plus 9 commits, with Solaar's complete git history.
+
+Copyright
+  Files inherited from Solaar keep their copyright and license notices (see COPYRIGHT and the
+  file headers): Daniel Pavel, Peter Patel-Schneider and the Solaar contributors.
+  Files added by plasmaar are Copyright (C) 2026 plasmaar contributors.
+
+Changes
+  Every file inherited from Solaar and modified by plasmaar carries this line in its header:
+    Modified for plasmaar since 2026-10-02 (https://github.com/fredaime/plasmaar); dated changes: its git history.
+  The git history of https://github.com/fredaime/plasmaar records each change and its date.
+  Removed from Solaar: its udev rule files (replaced by rules.d/42-plasmaar.rules and
+  rules.d/42-plasmaar-uinput.rules, derived from them) and its GitHub Pages deployment workflow.
+  When you modify another file inherited from Solaar, add the same line to its header.
+
+License
+  GNU General Public License, version 2 or (at your option) any later version, like Solaar
+  (see LICENSE.txt). Components inherited from Solaar keep their own licenses:
+  - lib/hid_parser: MIT
+  - the key symbol table in lib/keysyms, generated from X.org's keysymdef.h and XF86keysym.h: MIT
+  - the icons under share/solaar/icons: from the GNOME and Oxygen icon themes (see share/README)

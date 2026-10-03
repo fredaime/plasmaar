@@ -1,4 +1,5 @@
-include COPYRIGHT LICENSE.txt README.md CHANGELOG.md lib/solaar/version lib/solaar/commit
+# Modified for plasmaar since 2026-10-02 (https://github.com/fredaime/plasmaar); dated changes: its git history.
+include COPYRIGHT LICENSE.txt NOTICE README.md CHANGELOG.md lib/solaar/version lib/solaar/commit
 recursive-include rules.d *
 recursive-include share/locale *
 recursive-include share/systemd *

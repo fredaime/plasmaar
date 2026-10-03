@@ -1,3 +1,4 @@
+# Modified for plasmaar since 2026-10-02 (https://github.com/fredaime/plasmaar); dated changes: its git history.
 import importlib
 import os
 

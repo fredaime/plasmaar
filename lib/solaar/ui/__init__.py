@@ -1,5 +1,6 @@
 ## Copyright (C) 2012-2013  Daniel Pavel
 ## Copyright (C) 2014-2024  Solaar Contributors https://pwr-solaar.github.io/Solaar/
+## Modified for plasmaar since 2026-10-02 (https://github.com/fredaime/plasmaar); dated changes: its git history.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by

@@ -1,3 +1,4 @@
+# Modified for plasmaar since 2026-10-02 (https://github.com/fredaime/plasmaar); dated changes: its git history.
 UDEV_RULE_FILE = 42-plasmaar.rules
 UDEV_RULE_FILE_UINPUT = 42-plasmaar-uinput.rules
 UDEV_RULES_SOURCE := rules.d/$(UDEV_RULE_FILE)
