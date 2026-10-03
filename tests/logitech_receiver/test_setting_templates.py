@@ -929,6 +929,42 @@ def test_check_feature_settings_without_persister():
     assert [s.name for s in already_known] == [tst.sclass.name]
 
 
+class _FailingDetection:
+    """A setting class whose detection hits a non-fatal (not HID++ internal) error."""
+
+    name = "failing_detection"
+    min_version = 0
+
+    @classmethod
+    def build(cls, device):
+        raise RuntimeError("simulated detection failure")
+
+
+@pytest.mark.parametrize("failing_first", [False, True])
+def test_check_feature_settings_skips_setting_whose_detection_fails(failing_first, mocker):
+    """A failed detection must not register a stale setting from the previous loop iteration.
+
+    Before the fix, the code after the except branch reused ``setting`` from the previous
+    iteration, registering that setting a second time, or raised UnboundLocalError when the
+    failure happened on the first iteration.
+    """
+    tst = simple_tests[0].test
+    device = fake_hidpp.Device(
+        responses=simple_tests[0].responses, feature=tst.sclass.feature, offset=tst.offset, version=tst.version
+    )
+    failing = type("_Failing", (_FailingDetection,), {"feature": tst.sclass.feature})
+    classes = [failing, tst.sclass] if failing_first else [tst.sclass, failing]
+    mocker.patch.object(settings_templates, "SETTINGS", classes)
+
+    already_known = []
+    result = settings_templates.check_feature_settings(device, already_known)
+
+    assert result is True
+    assert [s.name for s in already_known] == [tst.sclass.name]
+    # a transient failure is not cached as absent, so the next detection run retries it
+    assert failing.name not in device.persister.get("_absent", [])
+
+
 @pytest.mark.parametrize(
     "test",
     [

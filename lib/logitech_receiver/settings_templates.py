@@ -4702,6 +4702,8 @@ def check_feature_settings(device, already_known) -> bool:
                     return False
                 else:
                     logger.warning(f"ignore feature {sclass.name} because of error {err}")
+                    # Not detected this run, and not cached as absent: the error may be transient.
+                    continue
 
             if isinstance(setting, list):
                 for s in setting:
