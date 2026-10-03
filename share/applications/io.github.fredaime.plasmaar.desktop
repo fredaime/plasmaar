@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=plasmaar
+GenericName=Logitech device service
+Comment=Settings and button actions for Logitech HID++ mice and keyboards
+Icon=input-mouse
+Exec=plasmaard
+NoDisplay=true
+Categories=Settings;HardwareSettings;
+Keywords=Logitech;mouse;keyboard;HID++;
+X-GNOME-UsesNotifications=true
+X-KDE-StartupNotify=false

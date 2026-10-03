@@ -207,3 +207,34 @@ def test_run_warns_when_udev_rule_missing(lifecycle, monkeypatch, caplog):
     d.run()
 
     assert "42-plasmaar.rules not found" in caplog.text
+
+
+def test_rules_file_changes_reload_once_after_debounce(monkeypatch):
+    reload = mock.Mock()
+    monkeypatch.setattr(daemon.diversion, "reload_config_rule_file", reload)
+    timeouts = []
+    monkeypatch.setattr(daemon.GLib, "timeout_add", lambda ms, fn: timeouts.append(fn) or 1)
+    d = daemon.Daemon()
+
+    for event in (
+        daemon.Gio.FileMonitorEvent.CHANGED,  # ignored: wait for the end of the save
+        daemon.Gio.FileMonitorEvent.CHANGES_DONE_HINT,
+        daemon.Gio.FileMonitorEvent.RENAMED,  # same save, already scheduled
+    ):
+        d._rules_file_changed(None, None, None, event)
+
+    assert len(timeouts) == 1
+    timeouts[0]()
+    reload.assert_called_once()
+    assert d._rules_reload_id is None
+
+
+def test_run_watches_the_rules_file(lifecycle, monkeypatch):
+    watch = mock.Mock()
+    monkeypatch.setattr(daemon.Daemon, "_watch_rules", watch)
+    d = daemon.Daemon()
+    lifecycle.start_all.side_effect = d.quit
+
+    d.run()
+
+    watch.assert_called_once()

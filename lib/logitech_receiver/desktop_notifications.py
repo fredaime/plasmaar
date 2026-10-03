@@ -23,11 +23,12 @@ desktops implement this service.
 
 import logging
 
+from solaar import APP_ID
 from solaar import APP_NAME
 
 logger = logging.getLogger(__name__)
 
-DESKTOP_ENTRY = APP_NAME
+DESKTOP_ENTRY = APP_ID  # share/applications/<APP_ID>.desktop: Plasma shows its name and icon
 
 _BUS_NAME = "org.freedesktop.Notifications"
 _OBJECT_PATH = "/org/freedesktop/Notifications"

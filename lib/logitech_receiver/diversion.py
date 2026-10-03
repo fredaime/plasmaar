@@ -1380,6 +1380,75 @@ class Execute(Action):
         return {"Execute": self.args[:]}
 
 
+class KdeShortcut(Action):
+    """Invoke a KDE global shortcut action by name through kglobalaccel, e.g. ["kwin", "Overview"].
+
+    Uses the action itself rather than its key binding, so it works whatever keys are bound
+    (or none) and needs no input injection."""
+
+    def __init__(self, args, warn=True):
+        if isinstance(args, list) and len(args) == 2 and all(isinstance(a, str) and a for a in args):
+            self.component, self.shortcut = args
+        else:
+            if warn:
+                logger.warning("rule KdeShortcut argument not [component, action]: %s", args)
+            self.component, self.shortcut = "kwin", ""
+
+    def __str__(self):
+        return f"KdeShortcut: {self.component} {self.shortcut}"
+
+    def evaluate(self, feature, notification: HIDPPNotification, device, last_result):
+        if self.shortcut:
+            if logger.isEnabledFor(logging.INFO):
+                logger.info("KdeShortcut action: %s %s", self.component, self.shortcut)
+            invoke_kde_shortcut(self.component, self.shortcut)
+        return None
+
+    def data(self):
+        return {"KdeShortcut": [self.component, self.shortcut]}
+
+
+_KGLOBALACCEL = "org.kde.kglobalaccel"
+_KGLOBALACCEL_COMPONENT = "org.kde.kglobalaccel.Component"
+_session_bus = None
+
+
+def kde_component_path(component: str) -> str:
+    """kglobalaccel object path of a component: its name with every non [A-Za-z0-9_] character as '_'."""
+    return "/component/" + "".join(c if c.isascii() and (c.isalnum() or c == "_") else "_" for c in component)
+
+
+def invoke_kde_shortcut(component: str, shortcut: str) -> None:
+    """Ask kglobalaccel to run a component's shortcut action; asynchronous, failures are logged."""
+    global _session_bus
+    try:
+        from gi.repository import Gio
+
+        if _session_bus is None:
+            _session_bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+
+        def done(connection, result):
+            try:
+                connection.call_finish(result)
+            except Exception as e:
+                logger.warning("KDE shortcut %s/%s failed: %s", component, shortcut, e)
+
+        _session_bus.call(
+            _KGLOBALACCEL,
+            kde_component_path(component),
+            _KGLOBALACCEL_COMPONENT,
+            "invokeShortcut",
+            GLib.Variant("(s)", (shortcut,)),
+            None,
+            Gio.DBusCallFlags.NONE,
+            2000,
+            None,
+            done,
+        )
+    except Exception as e:
+        logger.warning("cannot invoke KDE shortcut %s/%s: %s", component, shortcut, e)
+
+
 class Later(Action):
     def __init__(self, args, warn=True):
         self.delay = 0
@@ -1439,6 +1508,7 @@ COMPONENTS = {
     "MouseClick": MouseClick,
     "Set": Set,
     "Execute": Execute,
+    "KdeShortcut": KdeShortcut,
     "Later": Later,
 }
 
@@ -1582,6 +1652,18 @@ def load_config_rule_file():
 
     if os.path.isfile(_file_path):
         rules = _load_rule_config(_file_path)
+
+
+def reload_config_rule_file():
+    """Reload user rules after the file changed; built-in rules only if it was removed."""
+    global rules
+
+    if os.path.isfile(_file_path):
+        rules = _load_rule_config(_file_path)
+    else:
+        rules = built_in_rules
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("%s removed: using built-in rules only", _file_path)
 
 
 def _load_rule_config(file_path: str) -> Rule:

@@ -58,7 +58,7 @@ def test_show_sends_notify(mock_notification_bus):
         [],
         -1,
     )
-    assert hints == {"desktop-entry": "plasmaar", "urgency": 1}
+    assert hints == {"desktop-entry": "io.github.fredaime.plasmaar", "urgency": 1}
 
 
 def test_show_replaces_previous_notification_of_device(mock_notification_bus):
