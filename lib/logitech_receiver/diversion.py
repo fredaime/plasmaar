@@ -1663,12 +1663,34 @@ def _save_config_rule_file(file_name: str = _file_path):
     return True
 
 
+# plasmaar: rules generated from managed configuration (solaar.buttons), evaluated before the rules file
+_generated_rules = None
+_loaded_rules = built_in_rules  # the rules file (if any) plus the built-in rules, without the generated part
+
+
+def _compose(loaded: Rule) -> Rule:
+    """The rules to evaluate: generated rules first, so a managed mapping wins over a custom rule for the
+    same button, then the rules file and the built-in rules. Without generated rules this is `loaded` itself."""
+    global _loaded_rules
+    _loaded_rules = loaded
+    if _generated_rules is None:
+        return loaded
+    return Rule([_generated_rules] + ([loaded] if loaded is built_in_rules else loaded.components))
+
+
+def set_generated_rules(rule) -> None:
+    """Install the generated rules (None removes them); the rules file stays loaded, and reloading it keeps them."""
+    global rules, _generated_rules
+    _generated_rules = rule
+    rules = _compose(_loaded_rules)
+
+
 def load_config_rule_file():
     """Loads user configured rules."""
     global rules
 
     if os.path.isfile(_file_path):
-        rules = _load_rule_config(_file_path)
+        rules = _compose(_load_rule_config(_file_path))
 
 
 def reload_config_rule_file():
@@ -1676,9 +1698,9 @@ def reload_config_rule_file():
     global rules
 
     if os.path.isfile(_file_path):
-        rules = _load_rule_config(_file_path)
+        rules = _compose(_load_rule_config(_file_path))
     else:
-        rules = built_in_rules
+        rules = _compose(built_in_rules)
         if logger.isEnabledFor(logging.INFO):
             logger.info("%s removed: using built-in rules only", _file_path)
 

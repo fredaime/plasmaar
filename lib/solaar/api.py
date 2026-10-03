@@ -23,12 +23,15 @@ session bus. Functions here may talk to devices and must run off the main loop.
 from __future__ import annotations
 
 import json
+import logging
 
 from logitech_receiver.common import NamedInt
 from logitech_receiver.settings import Kind
 from logitech_receiver.settings_validator import Range
 
 from solaar import listener
+
+logger = logging.getLogger(__name__)
 
 API_VERSION = 1
 
@@ -174,7 +177,8 @@ def _presented_value(setting, value):
     return _json_keys(value)
 
 
-def describe_setting(setting, cached: bool = True) -> dict:
+def describe_setting(setting, cached: bool = True, defaults: dict | None = None) -> dict:
+    """defaults: the device's captured defaults (stored_defaults); adds "default" when this setting has one."""
     kind = Kind(setting.kind) if setting.kind is not None else Kind.NONE
     info = {
         "name": setting.name,
@@ -195,6 +199,8 @@ def describe_setting(setting, cached: bool = True) -> dict:
     except Exception as e:  # report but keep listing the other settings
         info["value"] = None
         info["error"] = str(e)
+    if defaults and setting.name in defaults:
+        info["default"] = _presented_value(setting, defaults[setting.name])
     return info
 
 
@@ -206,7 +212,70 @@ def find_setting(device, name: str):
 
 
 def list_settings(dev_id: str) -> list[dict]:
-    return [describe_setting(s) for s in find_device(dev_id).settings]
+    device = find_device(dev_id)
+    capture_defaults(device)
+    defaults = stored_defaults(device)
+    return [describe_setting(s, defaults=defaults) for s in device.settings]
+
+
+# --- defaults: the values a device had when plasmaar first saw it ("Defaults" in a settings UI) ---
+
+DEFAULTS_KEY = "_defaults"  # in the device's persister (configuration file entry)
+_defaults_captured = set()  # device ids already captured by this process
+
+
+def stored_defaults(device) -> dict:
+    persister = getattr(device, "persister", None)
+    defaults = persister.get(DEFAULTS_KEY) if isinstance(persister, dict) else None
+    return defaults if isinstance(defaults, dict) else {}
+
+
+def _plain(value):
+    """A copy made of plain types (the setting's own value is a shared, mutable map with NamedInt entries)."""
+    if isinstance(value, dict):
+        return {int(k) if isinstance(k, int) else k: _plain(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain(v) for v in value]
+    if isinstance(value, NamedInt):
+        return int(value)
+    return value
+
+
+def _default_value(setting):
+    if setting.name == "divert-keys":  # factory state: every button does its normal job
+        return {int(key): 0 for key in setting.choices}
+    if setting.name == "reprogrammable-keys":  # factory state: every key does its own action
+        return {int(key): int(key) for key in setting.choices}
+    return _plain(setting.read(cached=True))
+
+
+def capture_defaults(device) -> None:
+    """Record the current value of each writable setting as its default, once: values already recorded are never
+    overwritten, so they stay those of the first time plasmaar saw the device. Does device I/O on the first call
+    for an online device; later calls in this process return at once."""
+    dev_id = device_id(device)
+    if dev_id in _defaults_captured or not device.online:
+        return
+    persister = getattr(device, "persister", None)
+    if not isinstance(persister, dict):
+        return
+    defaults = dict(stored_defaults(device))
+    added = False
+    for setting in device.settings:
+        kind = Kind(setting.kind) if setting.kind is not None else Kind.NONE
+        if setting.name in defaults or kind not in WRITABLE_KINDS or not getattr(setting, "persist", True):
+            continue
+        try:
+            value = _default_value(setting)
+        except Exception:
+            logger.debug("cannot read %s of %s for its default", setting.name, dev_id, exc_info=True)
+            continue
+        if value is not None:
+            defaults[setting.name] = value
+            added = True
+    _defaults_captured.add(dev_id)
+    if added:
+        persister[DEFAULTS_KEY] = defaults  # assigning (not mutating) schedules a configuration save
 
 
 def _check_choice(value, choices):

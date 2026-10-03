@@ -15,16 +15,40 @@ import pytest
 
 from gi.repository import Gio
 from gi.repository import GLib
+from logitech_receiver.common import NamedInt
+from logitech_receiver.common import NamedInts
+from logitech_receiver.settings import Kind
 from solaar import api
+from solaar import buttons
 from solaar import dbus_service
+
+# A session-type bus without service directories: a call to a missing name (e.g. kglobalaccel) fails
+# instead of activating the desktop's real service on the test bus.
+_TEST_BUS_CONFIG = """<!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+<busconfig>
+  <type>session</type>
+  <listen>unix:tmpdir=/tmp</listen>
+  <auth>EXTERNAL</auth>
+  <policy context="default">
+    <allow send_destination="*" eavesdrop="true"/>
+    <allow eavesdrop="true"/>
+    <allow own="*"/>
+  </policy>
+</busconfig>
+"""
 
 
 @pytest.fixture
-def test_bus():
+def test_bus(tmp_path):
     """A throwaway dbus-daemon; tests talk to it through private connections only."""
     if shutil.which("dbus-daemon") is None:
         pytest.skip("no dbus-daemon for a private test bus")
-    daemon = subprocess.Popen(["dbus-daemon", "--session", "--nofork", "--print-address=1"], stdout=subprocess.PIPE, text=True)
+    config = tmp_path / "test-bus.conf"
+    config.write_text(_TEST_BUS_CONFIG)
+    daemon = subprocess.Popen(
+        ["dbus-daemon", f"--config-file={config}", "--nofork", "--print-address=1"], stdout=subprocess.PIPE, text=True
+    )
     address = daemon.stdout.readline().strip()
     connections = []
 
@@ -175,3 +199,216 @@ def test_service_uses_the_given_connection(service, test_bus):
     assert service._connection is not None
     assert service._connection.get_unique_name() is not None
     assert os.environ.get("DBUS_SESSION_BUS_ADDRESS") != test_bus.address  # session bus untouched
+
+
+# --- button actions: ListKdeActions, GetButtonActions, SetButtonAction, ButtonActionsChanged ---
+
+HAPTIC = NamedInt(0x1A0, "Haptic")
+GESTURE = NamedInt(0xC3, "Mouse Gesture Button")
+MX_MASTER = "B04200000000-BD2BC136"
+
+_KGLOBALACCEL_XML = """
+<node>
+  <interface name="org.kde.KGlobalAccel">
+    <method name="allComponents"><arg type="ao" direction="out"/></method>
+  </interface>
+  <interface name="org.kde.kglobalaccel.Component">
+    <method name="allShortcutInfos"><arg type="a(ssssssaiai)" direction="out"/></method>
+    <property name="uniqueName" type="s" access="read"/>
+    <property name="friendlyName" type="s" access="read"/>
+  </interface>
+</node>
+"""
+
+
+@pytest.fixture
+def kglobalaccel(test_bus):
+    """A fake org.kde.kglobalaccel on the private bus, served from the main loop like the real one."""
+    components = {
+        "/component/kwin": ("kwin", "KWin", [("Overview", "Basculer vers l'aperçu"), ("Grid View", "Affichage en grille")]),
+        "/component/org_kde_spectacle_desktop": (
+            "org.kde.spectacle.desktop",
+            "Spectacle",
+            [("RectangularRegionScreenShot", "Capturer une région rectangulaire")],
+        ),
+    }
+    connection = test_bus.connect_private()
+    interfaces = Gio.DBusNodeInfo.new_for_xml(_KGLOBALACCEL_XML).interfaces
+
+    def all_components(_connection, _sender, _path, _interface, _method, _params, invocation):
+        invocation.return_value(GLib.Variant("(ao)", (list(components),)))
+
+    def all_shortcut_infos(_connection, _sender, path, _interface, _method, _params, invocation):
+        name, label, actions = components[path]
+        infos = [(action, text, name, label, "default", "Default Context", [], []) for action, text in actions]
+        invocation.return_value(GLib.Variant("(a(ssssssaiai))", (infos,)))
+
+    def get_property(_connection, _sender, path, _interface, prop):
+        name, label, _actions = components[path]
+        return GLib.Variant("s", name if prop == "uniqueName" else label)
+
+    connection.register_object("/kglobalaccel", interfaces[0], all_components, None, None)
+    for path in components:
+        connection.register_object(path, interfaces[1], all_shortcut_infos, get_property, None)
+    owned = []
+    Gio.bus_own_name_on_connection(
+        connection, "org.kde.kglobalaccel", Gio.BusNameOwnerFlags.NONE, lambda *_args: owned.append(True), None
+    )
+    assert _spin(lambda: owned)
+    return components
+
+
+class FakeDivertKeys:
+    name = "divert-keys"
+    kind = Kind.MAP_CHOICE
+    persist = True
+
+    def __init__(self):
+        self.choices = {
+            HAPTIC: NamedInts(Regular=0, Diverted=1),
+            GESTURE: NamedInts(**{"Regular": 0, "Diverted": 1, "Mouse Gestures": 2}),
+        }
+        self.value = {0x1A0: 0, 0xC3: 0}
+
+    def read(self, cached=True):
+        return self.value
+
+    def write_key_value(self, key, value, save=True):
+        self.value[int(key)] = value
+        return value
+
+
+@pytest.fixture
+def mx_master(monkeypatch):
+    """An online MX Master 4 with divertable buttons, known to the (fake) listeners."""
+    device = mock.Mock(name="MX Master 4", isDevice=True, online=True, modelId="B04200000000", unitId="BD2BC136")
+    device.settings = [FakeDivertKeys()]
+    monkeypatch.setattr(api.listener, "_all_listeners", {"/dev/hidraw0": mock.Mock(receiver=device)})
+    return device
+
+
+def _signals(proxy):
+    signals = []
+    proxy.connect("g-signal", lambda _p, _sender, name, params: signals.append((name, params.unpack())))
+    return signals
+
+
+def _remote_error(proxy, method, signature, *args):
+    with pytest.raises(GLib.Error) as error:
+        _call(proxy, method, signature, *args)
+    return Gio.DBusError.get_remote_error(error.value).rsplit(".", 1)[-1]
+
+
+def test_list_kde_actions_reads_kglobalaccel(proxy, kglobalaccel):
+    (actions_json,) = _call(proxy, "ListKdeActions")
+
+    assert json.loads(actions_json) == [
+        {
+            "component": "kwin",
+            "label": "KWin",
+            "actions": [
+                {"name": "Grid View", "label": "Affichage en grille"},
+                {"name": "Overview", "label": "Basculer vers l'aperçu"},
+            ],
+        },
+        {
+            "component": "org.kde.spectacle.desktop",
+            "label": "Spectacle",
+            "actions": [{"name": "RectangularRegionScreenShot", "label": "Capturer une région rectangulaire"}],
+        },
+    ]
+
+
+def test_list_kde_actions_without_kglobalaccel_fails(proxy):
+    assert _remote_error(proxy, "ListKdeActions", None) == "Failed"
+
+
+def test_get_button_actions(proxy, mx_master):
+    (buttons_json,) = _call(proxy, "GetButtonActions", "(s)", MX_MASTER)
+
+    result = json.loads(buttons_json)
+    assert result["device_id"] == MX_MASTER
+    assert [(b["control"], b["name"], b["modes"], b["mode"]) for b in result["buttons"]] == [
+        (416, "Haptic", ["off", "press"], "off"),
+        (195, "Mouse Gesture Button", ["off", "press", "gesture"], "off"),
+    ]
+
+
+def test_set_button_action_replies_and_signals(proxy, mx_master, isolate_button_actions):
+    signals = _signals(proxy)
+    config = {"mode": "gesture", "gestures": {"up": {"component": "kwin", "action": "Grid View"}}}
+
+    (button_json,) = _call(proxy, "SetButtonAction", "(sis)", MX_MASTER, 195, json.dumps(config))
+
+    button = json.loads(button_json)
+    assert button["mode"] == "gesture"
+    assert button["gestures"]["up"] == {"component": "kwin", "action": "Grid View"}
+    assert _spin(lambda: len(signals) == 2)
+    assert signals == [
+        ("SettingChanged", (MX_MASTER, "divert-keys", '{"416": 0, "195": 2}')),
+        ("ButtonActionsChanged", (MX_MASTER,)),
+    ]
+    assert "up: [kwin, Grid View]" in isolate_button_actions.read_text()
+    (buttons_json,) = _call(proxy, "GetButtonActions", "(s)", MX_MASTER)
+    assert json.loads(buttons_json)["buttons"][1] == button
+
+
+@pytest.mark.parametrize(
+    "device_id, control, config, error",
+    [
+        (MX_MASTER, 416, '{"mode": "gesture"}', "NotSupported"),
+        (MX_MASTER, 999, '{"mode": "press"}', "InvalidValue"),
+        (MX_MASTER, 416, '{"press": "Overview"}', "InvalidValue"),
+        ("nope", 416, '{"mode": "press"}', "NoSuchDevice"),
+    ],
+)
+def test_set_button_action_errors(proxy, mx_master, device_id, control, config, error):
+    assert _remote_error(proxy, "SetButtonAction", "(sis)", device_id, control, config) == error
+
+
+def test_set_button_action_offline(proxy, mx_master):
+    mx_master.online = False
+
+    assert _remote_error(proxy, "SetButtonAction", "(sis)", MX_MASTER, 416, '{"mode": "press"}') == "DeviceOffline"
+
+
+def test_divert_keys_written_directly_updates_button_actions(proxy, mx_master):
+    _call(
+        proxy,
+        "SetButtonAction",
+        "(sis)",
+        MX_MASTER,
+        416,
+        '{"mode": "press", "press": {"component": "kwin", "action": "Overview"}}',
+    )
+    signals = _signals(proxy)
+
+    _call(proxy, "SetSettingKey", "(ssss)", MX_MASTER, "divert-keys", "416", "0")
+
+    assert _spin(lambda: len(signals) == 2)
+    assert [name for name, _args in signals] == ["SettingChanged", "ButtonActionsChanged"]
+    assert buttons._mappings[MX_MASTER][416]["mode"] == "off"
+
+
+def test_button_actions_changed_signal(proxy, service):
+    signals = _signals(proxy)
+
+    service.button_actions_changed(MX_MASTER)
+
+    assert _spin(lambda: signals)
+    assert signals == [("ButtonActionsChanged", (MX_MASTER,))]
+
+
+def test_device_added_captures_defaults(proxy, service, monkeypatch):
+    device = mock.Mock(online=True)
+    device.__bool__ = lambda self: True
+    monkeypatch.setattr(api, "device_id", lambda d: MX_MASTER)
+    monkeypatch.setattr(api, "describe_device", lambda d: {"id": MX_MASTER})
+    capture = mock.Mock()
+    monkeypatch.setattr(api, "capture_defaults", capture)
+    signals = _signals(proxy)
+
+    service.device_changed(device)
+
+    assert _spin(lambda: signals and capture.called)
+    capture.assert_called_once_with(device)

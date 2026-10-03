@@ -29,6 +29,8 @@ from gi.repository import Gio
 from gi.repository import GLib
 
 from solaar import api
+from solaar import buttons
+from solaar import kde_actions
 from solaar.tasks import TaskRunner
 
 logger = logging.getLogger(__name__)
@@ -68,6 +70,22 @@ INTROSPECTION_XML = f"""
       <arg type="s" name="device_id" direction="in"/>
       <arg type="s" name="waveform" direction="in"/>
     </method>
+    <method name="ListKdeActions">
+      <arg type="s" name="actions_json" direction="out"/>
+    </method>
+    <method name="GetButtonActions">
+      <arg type="s" name="device_id" direction="in"/>
+      <arg type="s" name="buttons_json" direction="out"/>
+    </method>
+    <method name="SetButtonAction">
+      <arg type="s" name="device_id" direction="in"/>
+      <arg type="i" name="control" direction="in"/>
+      <arg type="s" name="config_json" direction="in"/>
+      <arg type="s" name="button_json" direction="out"/>
+    </method>
+    <signal name="ButtonActionsChanged">
+      <arg type="s" name="device_id"/>
+    </signal>
     <signal name="DeviceAdded">
       <arg type="s" name="device_json"/>
     </signal>
@@ -157,6 +175,9 @@ class Service:
             "SetSetting": self._set_setting,
             "SetSettingKey": self._set_setting_key,
             "PlayHaptic": self._play_haptic,
+            "ListKdeActions": self._list_kde_actions,
+            "GetButtonActions": self._get_button_actions,
+            "SetButtonAction": self._set_button_action,
         }.get(method) or self._METHODS.get(method)
         if handler is None:
             invocation.return_dbus_error("org.freedesktop.DBus.Error.UnknownMethod", f"no method {method}")
@@ -185,11 +206,37 @@ class Service:
         _device, setting = api.set_setting_key(dev_id, name, key_json, value_json)
         value = api.to_json(api.setting_value(setting))
         self._emit("SettingChanged", "(sss)", (dev_id, name, value))
+        if name == buttons.DIVERT_SETTING:
+            self._divert_keys_changed(dev_id, setting)
         return value
 
     def _play_haptic(self, dev_id, waveform):
         api.play_haptic(dev_id, waveform)
         return None
+
+    # --- button actions (docs/dbus-api.md, solaar.buttons) ---
+
+    def _list_kde_actions(self):
+        return api.to_json(kde_actions.list_actions(self._connection))
+
+    def _get_button_actions(self, dev_id):
+        return api.to_json(buttons.get_button_actions(dev_id))
+
+    def _set_button_action(self, dev_id, control, config_json):
+        button, divert = buttons.set_button_action(dev_id, control, config_json)
+        if divert is not None:
+            self._emit("SettingChanged", "(sss)", (dev_id, divert.name, api.to_json(api.setting_value(divert))))
+        self.button_actions_changed(dev_id)
+        return api.to_json(button)
+
+    def _divert_keys_changed(self, dev_id, setting):
+        """divert-keys written directly (SetSettingKey): managed button rules follow the new diversion."""
+        if buttons.sync_modes(dev_id, setting.read(cached=True)):
+            self.button_actions_changed(dev_id)
+
+    def button_actions_changed(self, dev_id):
+        """Emit ButtonActionsChanged (any thread), e.g. after buttons.yaml was edited."""
+        self._emit("ButtonActionsChanged", "(s)", (dev_id,))
 
     # --- change notifications from the daemon (any thread) ---
 
@@ -214,6 +261,10 @@ class Service:
         if self._known.get(dev_id) != description:
             self._known[dev_id] = description
             self._emit(signal, "(s)", (api.to_json(description),))
+        try:  # first sight of the device: record its settings as their defaults (once)
+            api.capture_defaults(device)
+        except Exception:
+            logger.warning("cannot capture the default settings of %s", dev_id, exc_info=True)
 
     def _emit_setting(self, device, setting):
         try:
