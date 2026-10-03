@@ -24,11 +24,14 @@ option(BUILD_TESTING "Build the tests" ON)
 add_compile_definitions(TRANSLATION_DOMAIN="kcm_plasmaar")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# The plugin is a shared object that links the static core library and the object libraries Qt
+# generates for its QML module (resources, type registrations): all of them must be PIC. Some
+# toolchains (Ubuntu) default to it, others (Fedora) do not.
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # The D-Bus client, the staging model and the controller: a static QML module, so that the QML is typed
 # (qmllint checks it against the generated .qmltypes) and the tests can use it without KCMUtils.
 qt_add_library(plasmaar_kcm_core STATIC)
-set_target_properties(plasmaar_kcm_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 qt_add_qml_module(plasmaar_kcm_core
     URI io.github.fredaime.plasmaar
     VERSION 1.0
