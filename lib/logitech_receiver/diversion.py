@@ -131,10 +131,7 @@ def gkeymap():
 
 wayland = os.getenv("WAYLAND_DISPLAY")  # is this Wayland?
 if wayland:
-    logger.warning(
-        "rules cannot access modifier keys in Wayland, "
-        "accessing process only works on GNOME with Solaar Gnome extension installed"
-    )
+    logger.info("rules cannot access modifier keys in Wayland")
 
 try:
     _x11 = None  # X11 might be available
