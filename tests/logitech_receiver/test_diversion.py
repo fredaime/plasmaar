@@ -1,3 +1,4 @@
+import struct
 import textwrap
 
 from unittest import mock
@@ -125,3 +126,35 @@ def test_process_notification(feature, data):
     )
 
     diversion.process_notification(device_mock, notification, feature)
+
+
+def _gesture_notification(*values):
+    return HIDPPNotification(0, 0, 0, 0, struct.pack("!" + len(values) * "h", *values))
+
+
+# recorded from an MX Master 4: gesture button (195), an upward swipe with a pause in the middle
+_SWIPE_UP_WITH_PAUSE = (195, 0, 0, -5, 0, 1, -8)
+
+
+@pytest.mark.parametrize(
+    "movements, data, expected",
+    [
+        (["Mouse Up"], _SWIPE_UP_WITH_PAUSE, True),  # pause-split repeats count as one step
+        (["Mouse Up"], (195, 0, 0, -5), True),
+        (["Mouse Up", "Mouse Up"], _SWIPE_UP_WITH_PAUSE, True),  # exact multi-step rules still match
+        (["Mouse Down"], _SWIPE_UP_WITH_PAUSE, False),
+        (["Mouse Up", "Mouse Right"], (195, 0, 0, -5, 0, 1, -8, 0, 6, 0), True),
+        (["Mouse Up", "Mouse Right"], (195, 0, 0, -5, 0, 6, 0, 0, 7, 1), True),
+        (["Mouse Up"], (195, 0, 0, -5, 0, 6, 0), False),  # up then right is not just up
+        (["Mouse Gesture Button", "Mouse Up"], _SWIPE_UP_WITH_PAUSE, True),
+        (["Smart Shift", "Mouse Up"], _SWIPE_UP_WITH_PAUSE, False),
+        ([], (195,), True),  # click without movement
+        (["Mouse Up"], (195, 0, 0), False),  # malformed
+    ],
+)
+def test_mouse_gesture_matching(movements, data, expected):
+    condition = diversion.MouseGesture(movements, warn=False)
+
+    result = condition.evaluate(diversion.SupportedFeature.MOUSE_GESTURE, _gesture_notification(*data), None, None)
+
+    assert result is expected
