@@ -1,0 +1,7 @@
+# This rule was added by plasmaar (derived from Solaar's rule).
+#
+# Gives the user logged in at the active seat access to /dev/uinput, so rule actions can
+# inject key presses, clicks and scrolls. Only needed when button actions are sent as
+# synthetic input; it lets that user's programs inject input into the session.
+
+KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput"

@@ -1,0 +1,29 @@
+# This rule was added by plasmaar (derived from Solaar's rule).
+#
+# Gives the user logged in at the active seat (systemd-logind "uaccess") raw access to
+# Logitech HID++ devices, so plasmaard can run as that user instead of root.
+# Write access is potentially dangerous because it also allows firmware updates.
+#
+# Access to /dev/uinput (input injection) is in the separate 42-plasmaar-uinput.rules.
+
+ACTION == "remove", GOTO="plasmaar_end"
+SUBSYSTEM != "hidraw", GOTO="plasmaar_end"
+
+# USB-connected Logitech receivers and devices
+ATTRS{idVendor}=="046d", GOTO="plasmaar_apply"
+
+# Lenovo nano receiver
+ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6042", GOTO="plasmaar_apply"
+
+# Bluetooth-connected Logitech devices
+KERNELS == "0005:046D:*", GOTO="plasmaar_apply"
+
+GOTO="plasmaar_end"
+
+LABEL="plasmaar_apply"
+
+# Allow any seated user to access the receiver.
+# uaccess: modern ACL-enabled udev
+TAG+="uaccess"
+
+LABEL="plasmaar_end"

@@ -1,13 +1,14 @@
-UDEV_RULE_FILE = 42-logitech-unify-permissions.rules
+UDEV_RULE_FILE = 42-plasmaar.rules
+UDEV_RULE_FILE_UINPUT = 42-plasmaar-uinput.rules
 UDEV_RULES_SOURCE := rules.d/$(UDEV_RULE_FILE)
-UDEV_RULES_SOURCE_UINPUT := rules.d-uinput/$(UDEV_RULE_FILE)
+UDEV_RULES_SOURCE_UINPUT := rules.d/$(UDEV_RULE_FILE_UINPUT)
 UDEV_RULES_DEST := /etc/udev/rules.d/
 
 PIP_ARGS ?= .
 
 .PHONY: install_ubuntu install_macos
 .PHONY: install_apt install_brew install_pip
-.PHONY: install_udev install_udev_uinput reload_udev uninstall_udev
+.PHONY: install_udev install_udev_uinput reload_udev uninstall_udev install_user_service uninstall_user_service
 .PHONY: format lint test
 
 install_ubuntu: install_apt install_udev_uinput install_pip
@@ -43,22 +44,39 @@ install_pipx:
 	pipx install --system-site-packages $(PIP_ARGS)
 
 install_udev:
-	@echo "Copying Solaar udev rule to $(UDEV_RULES_DEST)"
-	sudo cp $(UDEV_RULES_SOURCE) $(UDEV_RULES_DEST)
+	@echo "Copying plasmaar udev rule (Logitech hidraw access) to $(UDEV_RULES_DEST)"
+	sudo install -m 644 $(UDEV_RULES_SOURCE) $(UDEV_RULES_DEST)
 	make reload_udev
 
-install_udev_uinput:
-	@echo "Copying Solaar udev rule (uinput) to $(UDEV_RULES_DEST)"
-	sudo cp $(UDEV_RULES_SOURCE_UINPUT) $(UDEV_RULES_DEST)
+install_udev_uinput: install_udev
+	@echo "Copying plasmaar udev rule (uinput access) to $(UDEV_RULES_DEST)"
+	sudo install -m 644 $(UDEV_RULES_SOURCE_UINPUT) $(UDEV_RULES_DEST)
 	make reload_udev
 
 reload_udev:
-	@echo "Reloading udev rules"
+	@echo "Reloading udev rules and applying them to connected devices"
 	sudo udevadm control --reload-rules
+	sudo udevadm trigger --subsystem-match=hidraw --subsystem-match=misc --action=change
+
+PLASMAARD ?= $(shell command -v plasmaard)
+USER_UNIT_DIR := $(HOME)/.config/systemd/user
+
+install_user_service:
+	@test -n "$(PLASMAARD)" || { echo "plasmaard not found; install plasmaar or pass PLASMAARD=/path/to/plasmaard"; exit 1; }
+	@echo "Installing plasmaard user service running $(PLASMAARD)"
+	mkdir -p $(USER_UNIT_DIR)
+	sed 's|^ExecStart=.*|ExecStart=$(PLASMAARD)|' share/systemd/user/plasmaard.service > $(USER_UNIT_DIR)/plasmaard.service
+	systemctl --user daemon-reload
+	systemctl --user enable --now plasmaard.service
+
+uninstall_user_service:
+	-systemctl --user disable --now plasmaard.service
+	rm -f $(USER_UNIT_DIR)/plasmaard.service
+	systemctl --user daemon-reload
 
 uninstall_udev:
-	@echo "Removing Solaar udev rules from $(UDEV_RULES_DEST)"
-	sudo rm -f $(UDEV_RULES_DEST)/$(UDEV_RULE_FILE)
+	@echo "Removing plasmaar udev rules from $(UDEV_RULES_DEST)"
+	sudo rm -f $(UDEV_RULES_DEST)/$(UDEV_RULE_FILE) $(UDEV_RULES_DEST)/$(UDEV_RULE_FILE_UINPUT)
 	make reload_udev
 
 format:

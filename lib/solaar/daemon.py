@@ -42,11 +42,13 @@ from logitech_receiver import diversion
 from logitech_receiver.common import Alert
 
 from solaar import APP_NAME
+from solaar import UDEV_RULE
 from solaar import __version__
 from solaar import configuration
 from solaar import dbus
 from solaar import dbus_service
 from solaar import listener
+from solaar import udev_rule_installed
 from solaar.errors import ErrorReason
 
 logger = logging.getLogger(__name__)
@@ -115,7 +117,7 @@ class Daemon:
 
     def _report_error(self, reason: ErrorReason, object_):
         if reason == ErrorReason.PERMISSIONS:
-            logger.error("no permission to open %s: install the plasmaar udev rule", object_)
+            logger.error("no permission to open %s: install the udev rule %s (make install_udev)", object_, UDEV_RULE)
         else:
             logger.error("%s: %s", reason.value, object_)
         return False
@@ -142,6 +144,8 @@ class Daemon:
 
     def run(self) -> int:
         logger.info("%s daemon %s starting", APP_NAME, __version__)
+        if not udev_rule_installed():
+            logger.warning("udev rule %s not found: devices are only accessible to root", UDEV_RULE)
         # never connect to the display: GDK exits the process when the compositor restarts
         diversion.allow_display = False
         if self.notifications:

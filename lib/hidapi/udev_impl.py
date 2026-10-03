@@ -321,21 +321,23 @@ def open_path(device_path):
 
     :param device_path: the path of a ``DeviceInfo`` tuple returned by enumerate().
 
-    :returns: an opaque device handle, or ``None``.
+    :returns: an opaque device handle.
+    :raises OSError: if the device cannot be opened; EACCES after a few retries, so callers
+        can tell missing permissions apart from other failures.
     """
     assert device_path
     assert device_path.startswith("/dev/hidraw")
 
     logger.info("OPEN PATH %s", device_path)
     retrycount = 0
-    while retrycount < 3:
+    while True:
         retrycount += 1
         try:
             return os.open(device_path, os.O_RDWR | os.O_SYNC)
         except OSError as e:
             logger.info("OPEN PATH FAILED %s ERROR %s %s", device_path, e.errno, e)
-            if e.errno == errno.EACCES:
-                sleep(0.1)
+            if e.errno == errno.EACCES and retrycount < 3:
+                sleep(0.1)  # permissions may still be being applied by udev
             else:
                 raise e
 

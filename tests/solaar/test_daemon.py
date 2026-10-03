@@ -197,3 +197,13 @@ def test_losing_bus_name_exits_with_error(lifecycle, service):
     lifecycle.start_all.side_effect = d._name_lost
 
     assert d.run() == 1
+
+
+def test_run_warns_when_udev_rule_missing(lifecycle, monkeypatch, caplog):
+    monkeypatch.setattr(daemon, "udev_rule_installed", lambda: False)
+    d = daemon.Daemon()
+    lifecycle.start_all.side_effect = d.quit
+
+    d.run()
+
+    assert "42-plasmaar.rules not found" in caplog.text

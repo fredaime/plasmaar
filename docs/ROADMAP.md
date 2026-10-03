@@ -30,6 +30,10 @@ warnings use it. The K850 is covered via BlueZ.
 
 ## Phase 0: Headless core and `plasmaard` (shared foundation)
 
+**Status: done (2026-10-03).** 0.1 #4, 0.2 #5, 0.3 #7, 0.4 #8, 0.5 #9, 0.6 this change. Development setup:
+`make install_udev` (device access for the seated user) and
+`make install_user_service PLASMAARD=$PWD/.venv/bin/plasmaard` (starts with the Plasma session).
+
 Both assessments below depend on this. Estimate: 3–4 sessions.
 
 1. **Decouple `diversion`**: import it lazily from `settings_templates` and `notifications`,

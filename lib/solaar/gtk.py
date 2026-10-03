@@ -21,7 +21,6 @@ import faulthandler
 import importlib
 import locale
 import logging
-import os.path
 import platform
 import signal
 import sys
@@ -30,11 +29,13 @@ import tempfile
 from traceback import format_exc
 
 from solaar import NAME
+from solaar import UDEV_RULE
 from solaar import __version__
 from solaar import cli
 from solaar import configuration
 from solaar import dbus
 from solaar import listener
+from solaar import udev_rule_installed
 from solaar import ui
 from solaar.custom_logger import CustomLogger
 
@@ -180,16 +181,9 @@ def main():
     signal.signal(signal.SIGINT, _handlesig)
     signal.signal(signal.SIGTERM, _handlesig)
 
-    udev_file = "42-logitech-unify-permissions.rules"
-    if (
-        platform.system() == "Linux"
-        and logger.isEnabledFor(logging.WARNING)
-        and not os.path.isfile("/etc/udev/rules.d/" + udev_file)
-        and not os.path.isfile("/usr/lib/udev/rules.d/" + udev_file)
-        and not os.path.isfile("/usr/local/lib/udev/rules.d/" + udev_file)
-    ):
-        logger.warning("Solaar udev file not found in expected location")
-        logger.warning("See https://pwr-solaar.github.io/Solaar/installation for more information")
+    if platform.system() == "Linux" and not udev_rule_installed():
+        logger.warning("udev rule %s not found: devices are only accessible to root", UDEV_RULE)
+        logger.warning("install it with `make install_udev`")
     try:
         listener.setup_scanner(ui.status_changed, ui.setting_changed, ui.common.error_dialog)
 
