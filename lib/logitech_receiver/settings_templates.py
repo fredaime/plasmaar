@@ -553,7 +553,6 @@ class OnboardProfiles(settings.Setting):
     for i in range(1, 16):
         choices_universe[i] = f"Profile {i}"
         choices_universe[i + 0x100] = f"Read-Only Profile {i}"
-    validator_class = settings_validator.ChoicesValidator
 
     class rw_class:
         def __init__(self, feature):
@@ -1569,10 +1568,11 @@ class PersistentRemappableAction(settings.Settings):
             start = self._key_byte_count + self._read_skip_byte_count
             end = start + self._byte_count
             reply_value = common.bytes2int(reply_bytes[start:end]) & self.mask
-            # Craft keyboard has a value that isn't valid so fudge these values
+            # Craft keyboard has a value that isn't valid so fudge these values. Also factory mappings
+            # outside the choices (e.g. K850 Power action 0x09008200): shown as Default, device untouched.
             if reply_value not in self.choices[key]:
-                if logger.isEnabledFor(logging.WARNING):
-                    logger.warning("unusual persistent remappable action mapping %x: use Default", reply_value)
+                if logger.isEnabledFor(logging.INFO):
+                    logger.info("unusual persistent remappable action mapping %x for %s: use Default", reply_value, key)
                 reply_value = special_keys.KEYS_Default
             return reply_value
 
@@ -3135,7 +3135,6 @@ class BrightnessControl(settings.Setting):
     description = _("Control overall brightness")
     feature = _F.BRIGHTNESS_CONTROL
     rw_options = {"read_fnid": 0x10, "write_fnid": 0x20}
-    validator_class = settings_validator.RangeValidator
 
     def __init__(self, device, rw, validator):
         super().__init__(device, rw, validator)
@@ -4702,6 +4701,8 @@ def check_feature_settings(device, already_known) -> bool:
                     return False
                 else:
                     logger.warning(f"ignore feature {sclass.name} because of error {err}")
+                    # Not detected this run, and not cached as absent: the error may be transient.
+                    continue
 
             if isinstance(setting, list):
                 for s in setting:

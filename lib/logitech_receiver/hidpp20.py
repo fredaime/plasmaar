@@ -1756,10 +1756,15 @@ def feature_request(device, feature, function=0x00, *params, no_reply=False):
         if feature in device.features:
             feature_index = device.features[feature]
             return device.request((feature_index << 8) + (function & 0xFF), *params, no_reply=no_reply)
-    if logger.isEnabledFor(logging.WARN):
-        logger.warning(
-            "%s: feature request failure for device online %s and features %s", device, device.online, device.features
-        )
+        # Expected: callers probe optional features (e.g. get_battery() tries each battery feature in turn)
+        logger.debug("%s: no feature %s, request not sent", device, feature)
+        return None
+    logger.warning(
+        "%s: feature %s request failed: %s",
+        device,
+        feature,
+        "device offline" if not device.online else "feature table unavailable",
+    )
 
 
 class Hidpp20:

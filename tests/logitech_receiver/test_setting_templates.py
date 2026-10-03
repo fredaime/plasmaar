@@ -18,6 +18,8 @@
 The device uses some methods from the real device to set up data structures that are needed for some tests.
 """
 
+import logging
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -550,6 +552,41 @@ def test_simple_template(test, mocker, mock_gethostname):
     fake_hidpp.match_requests(tst.matched_calls, test.responses, spy_request.call_args_list)
 
 
+@pytest.mark.parametrize(
+    "sclass, base",
+    [
+        (settings_templates.OnboardProfiles, settings_validator.ChoicesValidator),
+        (settings_templates.BrightnessControl, settings_validator.RangeValidator),
+    ],
+)
+def test_validator_class_is_the_device_aware_subclass(sclass, base):
+    """These settings build their validator from what the device reports (profile headers,
+    brightness range), so validator_class must be their nested subclass with its own build(),
+    not the bare base validator."""
+    assert issubclass(sclass.validator_class, base)
+    assert sclass.validator_class is not base
+    assert sclass.validator_class.__qualname__ == f"{sclass.__name__}.validator_class"
+    assert "build" in vars(sclass.validator_class)
+
+
+def test_persistent_remappable_unrepresentable_mapping_reads_as_default_at_info(caplog):
+    """A K850 key reports a Power action mapping (0x09008200, System Sleep) that the Key/Consumer
+    choices cannot express. It is shown as Default and nothing is written to the device, so it is
+    informational and must not warn on every start."""
+    caplog.set_level(logging.DEBUG, logger="logitech_receiver.settings_templates")
+    key = common.NamedInt(0x50, "Left Button")
+    validator = settings_templates.PersistentRemappableAction.validator_class(
+        {key: special_keys.KEYS_KEYS_CONSUMER}, key_byte_count=2, byte_count=4
+    )
+
+    value = validator.validate_read(bytes.fromhex("0050" + "09008200"), key)
+
+    assert value == special_keys.KEYS_Default
+    records = [r for r in caplog.records if r.name == "logitech_receiver.settings_templates"]
+    assert [r.levelno for r in records] == [logging.INFO]
+    assert "9008200" in records[0].getMessage()
+
+
 responses_reprog_controls = [
     fake_hidpp.Response("03", 0x0500),
     fake_hidpp.Response("00500038010001010400000000000000", 0x0510, "00"),  # left button
@@ -927,6 +964,42 @@ def test_check_feature_settings_without_persister():
 
     assert result is True
     assert [s.name for s in already_known] == [tst.sclass.name]
+
+
+class _FailingDetection:
+    """A setting class whose detection hits a non-fatal (not HID++ internal) error."""
+
+    name = "failing_detection"
+    min_version = 0
+
+    @classmethod
+    def build(cls, device):
+        raise RuntimeError("simulated detection failure")
+
+
+@pytest.mark.parametrize("failing_first", [False, True])
+def test_check_feature_settings_skips_setting_whose_detection_fails(failing_first, mocker):
+    """A failed detection must not register a stale setting from the previous loop iteration.
+
+    Before the fix, the code after the except branch reused ``setting`` from the previous
+    iteration, registering that setting a second time, or raised UnboundLocalError when the
+    failure happened on the first iteration.
+    """
+    tst = simple_tests[0].test
+    device = fake_hidpp.Device(
+        responses=simple_tests[0].responses, feature=tst.sclass.feature, offset=tst.offset, version=tst.version
+    )
+    failing = type("_Failing", (_FailingDetection,), {"feature": tst.sclass.feature})
+    classes = [failing, tst.sclass] if failing_first else [tst.sclass, failing]
+    mocker.patch.object(settings_templates, "SETTINGS", classes)
+
+    already_known = []
+    result = settings_templates.check_feature_settings(device, already_known)
+
+    assert result is True
+    assert [s.name for s in already_known] == [tst.sclass.name]
+    # a transient failure is not cached as absent, so the next detection run retries it
+    assert failing.name not in device.persister.get("_absent", [])
 
 
 @pytest.mark.parametrize(

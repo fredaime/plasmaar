@@ -131,10 +131,7 @@ def gkeymap():
 
 wayland = os.getenv("WAYLAND_DISPLAY")  # is this Wayland?
 if wayland:
-    logger.warning(
-        "rules cannot access modifier keys in Wayland, "
-        "accessing process only works on GNOME with Solaar Gnome extension installed"
-    )
+    logger.info("rules cannot access modifier keys in Wayland")
 
 try:
     _x11 = None  # X11 might be available
@@ -1378,7 +1375,7 @@ class Execute(Action):
     def __init__(self, args, warn=True):
         if isinstance(args, str):
             args = [args]
-        if not (isinstance(args, list) and all(isinstance(arg), str) for arg in args):
+        if not (isinstance(args, list) and all(isinstance(arg, str) for arg in args)):
             if warn:
                 logger.warning("rule Execute argument not list of strings: %s", args)
             self.args = []
@@ -1389,6 +1386,8 @@ class Execute(Action):
         return "Execute: " + " ".join([a for a in self.args])
 
     def evaluate(self, feature, notification: HIDPPNotification, device, last_result):
+        if not self.args:  # nothing to run (no or invalid arguments)
+            return None
         if logger.isEnabledFor(logging.INFO):
             logger.info("Execute action: %s", self.args)
         subprocess.Popen(self.args)
