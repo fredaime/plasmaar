@@ -14,6 +14,8 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+from __future__ import annotations
+
 import gettext
 import locale
 import logging
@@ -29,11 +31,19 @@ _LOCALE_DOMAIN = NAME.lower()
 logger = logging.getLogger(__name__)
 
 
-def _find_locale_path(locale_domain: str) -> str:
-    prefix_share = os.path.normpath(os.path.join(os.path.realpath(sys.path[0]), ".."))
-    src_share = os.path.normpath(os.path.join(os.path.realpath(sys.path[0]), "..", "share"))
+def _locale_locations() -> tuple[str, ...]:
+    """Directories whose locale/ subdirectory may hold the compiled catalogues, most specific first."""
+    script = os.path.realpath(sys.path[0])
+    prefix_share = os.path.normpath(os.path.join(script, ".."))
+    src_share = os.path.normpath(os.path.join(script, "..", "share"))
+    # relative to the package, for console scripts of a source checkout (e.g. an editable install in a venv,
+    # where sys.path[0] is the venv's bin directory): lib/solaar/ -> share/
+    package_share = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "share"))
+    return prefix_share, src_share, package_share
 
-    for location in prefix_share, src_share:
+
+def _find_locale_path(locale_domain: str) -> str:
+    for location in _locale_locations():
         mo_files = glob(os.path.join(location, "locale", "*", "LC_MESSAGES", f"{locale_domain}.mo"))
         if mo_files:
             return os.path.join(location, "locale")
