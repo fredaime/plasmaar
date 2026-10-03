@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "plasmaar contributors"
+            }
+        ],
+        "Description": "Buttons, gestures, haptics, scrolling and sensitivity of Logitech mice and keyboards",
+        "Description[fr]": "Boutons, gestes, retour haptique, défilement et sensibilité des souris et claviers Logitech",
+        "Icon": "input-mouse",
+        "License": "GPL-2.0-or-later",
+        "Name": "Logitech Devices",
+        "Name[fr]": "Périphériques Logitech",
+        "Website": "https://github.com/fredaime/plasmaar"
+    },
+    "X-KDE-Keywords": "Logitech,mouse,keyboard,MX Master,buttons,gestures,haptic,haptics,DPI,sensitivity,scroll wheel,Smart Shift,HID++,plasmaar,Solaar",
+    "X-KDE-Keywords[fr]": "Logitech,souris,clavier,MX Master,boutons,gestes,haptique,retour haptique,DPI,sensibilité,molette,défilement,Smart Shift,HID++,plasmaar,Solaar",
+    "X-KDE-System-Settings-Parent-Category": "inputdevices"
+}
