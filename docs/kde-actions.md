@@ -47,6 +47,10 @@ The choice is saved and re-applied when the device reconnects.
 ...
 ```
 
+A gesture is matched exactly first; if that fails, repeated directions are merged, so a swipe
+that pauses halfway (recorded as "up, up") still matches `Mouse Up`. Multi-step gestures such as
+`[Mouse Up, Mouse Right]` keep working.
+
 Each `---` … `...` document is one rule: its conditions, then its actions. The other Solaar
 rule conditions and actions work too; see [rules.md](rules.md).
 

@@ -993,6 +993,15 @@ class TestBytes(Condition):
         return {"TestBytes": self.test[:]}
 
 
+def _collapse_repeats(steps):
+    """Merge consecutive identical steps: ["Mouse Up", "Mouse Up", "Mouse Right"] -> ["Mouse Up", "Mouse Right"]."""
+    collapsed = []
+    for step in steps:
+        if not collapsed or collapsed[-1] != step:
+            collapsed.append(step)
+    return collapsed
+
+
 class MouseGesture(Condition):
     MOVEMENTS = [
         "Mouse Up",
@@ -1023,26 +1032,35 @@ class MouseGesture(Condition):
         if feature == SupportedFeature.MOUSE_GESTURE:
             d = notification.data
             data = struct.unpack("!" + (int(len(d) / 2) * "h"), d)
-            data_offset = 1
             movement_offset = 0
             if self.movements and self.movements[0] not in self.MOVEMENTS:  # matching against initiating key
                 movement_offset = 1
                 if self.movements[0] != str(CONTROL[data[0]]):
                     return False
-            for m in self.movements[movement_offset:]:
-                if data_offset >= len(data):
-                    return False
-                if data[data_offset] == 0:
-                    direction = xy_direction(data[data_offset + 1], data[data_offset + 2])
-                    if m != direction:
-                        return False
-                    data_offset += 3
-                elif data[data_offset] == 1:
-                    if m != str(CONTROL[data[data_offset + 1]]):
-                        return False
-                    data_offset += 2
-            return data_offset == len(data)
+            gesture = self._gesture_steps(data)
+            wanted = list(self.movements[movement_offset:])
+            if gesture is None:
+                return False
+            if gesture == wanted:
+                return True
+            # A pause during a swipe splits it into repeated segments ("up, up"); treat those as one step
+            return _collapse_repeats(gesture) == _collapse_repeats(wanted)
         return False
+
+    @staticmethod
+    def _gesture_steps(data):
+        """The recorded steps after the initiating key: directions and other key names; None if malformed."""
+        steps, offset = [], 1
+        while offset < len(data):
+            if data[offset] == 0 and offset + 2 < len(data):
+                steps.append(xy_direction(data[offset + 1], data[offset + 2]))
+                offset += 3
+            elif data[offset] == 1 and offset + 1 < len(data):
+                steps.append(str(CONTROL[data[offset + 1]]))
+                offset += 2
+            else:
+                return None
+        return steps
 
     def data(self):
         return {"MouseGesture": [str(m) for m in self.movements]}
