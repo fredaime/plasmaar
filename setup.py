@@ -37,6 +37,9 @@ def _data_files():
     yield "share/applications", ["share/applications/solaar.desktop", "share/applications/io.github.fredaime.plasmaar.desktop"]
     yield "lib/udev/rules.d", ["rules.d/42-plasmaar.rules"]
     yield "lib/systemd/user", ["share/systemd/user/plasmaard.service"]
+    kwin_script = "share/kwin/scripts/plasmaar-focus"  # system-wide copy; enable it in System Settings, KWin Scripts
+    yield kwin_script, [f"{kwin_script}/metadata.json"]
+    yield f"{kwin_script}/contents/code", [f"{kwin_script}/contents/code/main.js"]
     yield "share/metainfo", ["share/solaar/io.github.pwr_solaar.solaar.metainfo.xml"]
 
 

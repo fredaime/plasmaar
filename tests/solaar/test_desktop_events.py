@@ -5,8 +5,10 @@ session bus, and never GLib's shared session connection. Notify calls are made w
 NO_AUTO_START so the test bus never activates a real notification server."""
 
 import json
+import os
 import shutil
 import subprocess
+import threading
 
 from types import SimpleNamespace
 from unittest import mock
@@ -15,6 +17,7 @@ import pytest
 
 from gi.repository import Gio
 from gi.repository import GLib
+from logitech_receiver import diversion
 from solaar import api
 from solaar import dbus_service
 from solaar import desktop_events
@@ -255,7 +258,7 @@ def test_unreachable_bus_is_logged(caplog):
         sources.stop()
 
 
-# --- the D-Bus methods (GetHapticEvents, SetHapticEvent) ---
+# --- the D-Bus methods (GetHapticEvents, SetHapticEvent, SetActiveWindow) ---
 
 
 @pytest.fixture
@@ -360,3 +363,50 @@ def test_haptic_events_end_to_end_through_the_persister(proxy, monkeypatch):
 
     (result,) = _call(proxy.proxy, "GetHapticEvents", "(s)", "B042-1")
     assert json.loads(result) == DESCRIPTION
+
+
+@pytest.fixture
+def kwin_focus(monkeypatch):
+    monkeypatch.setattr(diversion, "_kwin_focus", None)
+
+
+def test_set_active_window(proxy, kwin_focus):
+    assert _call(proxy.proxy, "SetActiveWindow", "(ssi)", "org.mozilla.firefox", "firefox", os.getpid()) == ()
+
+    resource_class, resource_name, process_name = diversion.kwin_focus_prog()
+    assert (resource_class, resource_name) == ("org.mozilla.firefox", "firefox")
+    assert process_name and process_name in open(f"/proc/{os.getpid()}/comm").read()
+
+
+def test_set_active_window_none(proxy, kwin_focus):
+    _call(proxy.proxy, "SetActiveWindow", "(ssi)", "", "", 0)
+
+    assert diversion.kwin_focus_prog() == ()
+
+
+def test_set_active_window_does_not_wait_for_the_worker(proxy, kwin_focus):
+    """Focus changes must not queue behind a device call that waits for a sleeping device."""
+    release = threading.Event()
+    proxy.service._worker(release.wait, 10)
+    try:
+        _call(proxy.proxy, "SetActiveWindow", "(ssi)", "konsole", "konsole", 0)
+        assert diversion.kwin_focus_prog() == ("konsole", "konsole", "")
+    finally:
+        release.set()
+
+
+def test_set_active_window_failure_is_an_error(proxy, monkeypatch):
+    monkeypatch.setattr(diversion, "set_kwin_focus", mock.Mock(side_effect=RuntimeError("boom")))
+
+    with pytest.raises(GLib.Error) as raised:
+        _call(proxy.proxy, "SetActiveWindow", "(ssi)", "konsole", "konsole", 1)
+
+    assert Gio.DBusError.get_remote_error(raised.value) == dbus_service.ERROR_PREFIX + "Failed"
+
+
+def test_set_active_window_rejects_wrong_types(proxy, kwin_focus):
+    """The KWin script must send an int32 pid; GDBus checks the signature before our handler runs."""
+    with pytest.raises(GLib.Error):
+        _call(proxy.proxy, "SetActiveWindow", "(ssd)", "konsole", "konsole", 1.0)
+
+    assert diversion.kwin_focus_prog() is None

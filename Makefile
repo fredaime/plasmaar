@@ -82,6 +82,26 @@ uninstall_user_service:
 	rm -f $(USER_UNIT_DIR)/plasmaard.service $(USER_APPLICATIONS_DIR)/$(DESKTOP_ENTRY)
 	systemctl --user daemon-reload
 
+# KWin script reporting the active window to plasmaard (Process rules on Plasma Wayland, docs/desktop-events.md)
+KWIN_SCRIPT := plasmaar-focus
+KWIN_SCRIPT_SOURCE := share/kwin/scripts/$(KWIN_SCRIPT)
+
+.PHONY: install_kwin_script uninstall_kwin_script
+
+# install or upgrade, enable, then unload a running copy so that reconfigure (re)loads the new code
+install_kwin_script:
+	@echo "Installing and enabling the $(KWIN_SCRIPT) KWin script"
+	kpackagetool6 --type KWin/Script --upgrade $(KWIN_SCRIPT_SOURCE) 2>/dev/null || kpackagetool6 --type KWin/Script --install $(KWIN_SCRIPT_SOURCE)
+	kwriteconfig6 --file kwinrc --group Plugins --key $(KWIN_SCRIPT)Enabled true
+	-qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.unloadScript $(KWIN_SCRIPT)
+	qdbus6 org.kde.KWin /KWin reconfigure
+
+uninstall_kwin_script:
+	kwriteconfig6 --file kwinrc --group Plugins --key $(KWIN_SCRIPT)Enabled --delete
+	-qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.unloadScript $(KWIN_SCRIPT)
+	-qdbus6 org.kde.KWin /KWin reconfigure
+	-kpackagetool6 --type KWin/Script --remove $(KWIN_SCRIPT)
+
 uninstall_udev:
 	@echo "Removing plasmaar udev rules from $(UDEV_RULES_DEST)"
 	sudo rm -f $(UDEV_RULES_DEST)/$(UDEV_RULE_FILE) $(UDEV_RULES_DEST)/$(UDEV_RULE_FILE_UINPUT)

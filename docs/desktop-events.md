@@ -1,9 +1,11 @@
-# Desktop events: haptic feedback
+# Desktop events: haptic feedback and per-app rules
 
-`plasmaard` follows what happens on the Plasma desktop:
+Two ways `plasmaard` follows what happens on the Plasma desktop:
 
 - **Haptic events**: a mouse with haptics (MX Master 4) plays a waveform when a notification
   arrives, when the virtual desktop changes, or when a battery runs low.
+- **Per-app rules**: a small KWin script tells `plasmaard` which window has the focus, so the
+  `Process` condition in `rules.yaml` works on Plasma Wayland.
 
 ## Haptic events
 
@@ -85,3 +87,61 @@ receives `Notify` calls (`org.freedesktop.DBus.Monitoring.BecomeMonitor`, allowe
 session bus). It looks at the application name, `replaces_id` and the `desktop-entry`/`urgency`
 hints only. Summaries and bodies are never read, logged or stored. If the bus refuses the
 monitor, `journalctl --user -u plasmaard` says so and the other events keep working.
+
+## Per-app rules on Plasma Wayland
+
+On Wayland, applications cannot ask which window has the focus, so Solaar's `Process`
+condition used to work only on X11 (or on GNOME with Solaar's GNOME extension). The
+`plasmaar-focus` KWin script reports the active window to `plasmaard` on every focus change
+(`SetActiveWindow`), and `Process` uses that report.
+
+### Install the KWin script
+
+```sh
+make install_kwin_script      # installs (or upgrades) and enables it, then reloads KWin's scripts
+make uninstall_kwin_script
+```
+
+This installs the package under `~/.local/share/kwin/scripts/plasmaar-focus` with
+`kpackagetool6`, enables it in `kwinrc` (`[Plugins] plasmaar-focusEnabled=true`; it also shows in
+System Settings → Window Management → KWin Scripts) and asks KWin to reconfigure. Check it runs:
+
+```sh
+qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.isScriptLoaded plasmaar-focus   # true
+```
+
+The script reports the window at load and on every activation, so after `plasmaard` restarts,
+`Process` matches from the next window switch on. If a `Process` condition is evaluated before
+any report arrived, the journal says that the KWin script seems to be missing.
+
+### Matching
+
+`Process: <text>` is true when the focused window's **resource class**, **resource name**, or
+**process name** starts with `<text>` (on X11 the same with the window's instance, class and
+process name). For Firefox that is e.g. `org.mozilla.firefox` or `firefox`, and the process
+`firefox` or `firefox-bin`, so `Process: firefox` matches all its packagings. To see what KWin
+reports for a window, run `qdbus6 org.kde.KWin /KWin queryWindowInfo` and click the window
+(look at `resourceClass` and `resourceName`).
+
+### Example: a different gesture action in Firefox
+
+Rules run in order and the first rule that ends with an action wins, so put the per-app rule
+first. With the gesture button diverted for mouse gestures (see [kde-actions.md](kde-actions.md)):
+
+```yaml
+%YAML 1.3
+---
+- Process: firefox
+- MouseGesture: Mouse Up
+- KdeShortcut: [kwin, Window Fullscreen]
+...
+---
+- MouseGesture: Mouse Up
+- KdeShortcut: [kwin, Grid View]
+...
+```
+
+Gesture up toggles full screen in Firefox and shows the desktop grid everywhere else.
+
+`MouseProcess` (the window under the pointer) is not reported by the script and still only
+works on X11 and GNOME.

@@ -2,3 +2,4 @@ include COPYRIGHT LICENSE.txt README.md CHANGELOG.md lib/solaar/version lib/sola
 recursive-include rules.d *
 recursive-include share/locale *
 recursive-include share/systemd *
+recursive-include share/kwin *

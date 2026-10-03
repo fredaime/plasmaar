@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "plasmaar contributors"
+            }
+        ],
+        "Description": "Reports the active window to plasmaar, so its rules can act per application on Wayland",
+        "Icon": "input-mouse",
+        "Id": "plasmaar-focus",
+        "License": "GPL-2.0-or-later",
+        "Name": "plasmaar focus reporter",
+        "Version": "1.0",
+        "Website": "https://github.com/fredaime/plasmaar"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js"
+}

@@ -27,6 +27,7 @@ import logging
 
 from gi.repository import Gio
 from gi.repository import GLib
+from logitech_receiver import diversion
 
 from solaar import api
 from solaar import buttons
@@ -111,6 +112,11 @@ INTROSPECTION_XML = f"""
       <arg type="s" name="event" direction="in"/>
       <arg type="s" name="waveform" direction="in"/>
       <arg type="s" name="haptic_events_json" direction="out"/>
+    </method>
+    <method name="SetActiveWindow">
+      <arg type="s" name="resource_class" direction="in"/>
+      <arg type="s" name="resource_name" direction="in"/>
+      <arg type="i" name="pid" direction="in"/>
     </method>
   </interface>
 </node>
@@ -293,7 +299,7 @@ class Service:
             return
         GLib.idle_add(_emit_signal, self._connection, signal, GLib.Variant(signature, args))
 
-    # --- desktop integration: haptic events (docs/desktop-events.md) ---
+    # --- desktop integration: haptic events and the active window (docs/desktop-events.md) ---
 
     _DESKTOP_METHODS = {
         "GetHapticEvents": lambda dev_id: api.to_json(haptic_events.get_haptic_events(dev_id)),
@@ -302,6 +308,17 @@ class Service:
 
     def _desktop_method_call(self, method, args, invocation) -> bool:
         """Handle the desktop-integration methods; False if method is not one of them."""
+        if method == "SetActiveWindow":
+            # called by the KWin script on every focus change: cheap, so answered right here on the
+            # main loop instead of waiting behind slow device calls on the worker
+            try:
+                diversion.set_kwin_focus(*args)
+            except Exception as e:
+                logger.exception("cannot record the active window")
+                invocation.return_dbus_error(ERROR_PREFIX + api.ApiError.dbus_name, str(e))
+            else:
+                invocation.return_value(None)
+            return True
         handler = self._DESKTOP_METHODS.get(method)
         if handler is None:
             return False
